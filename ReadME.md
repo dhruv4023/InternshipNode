@@ -49,3 +49,8 @@
 2. Node modules
 3. REPL
 4. Node Package Manager
+
+## Sources
+- YouTube Videos
+- ChatGPT
+- [w3schools](https://www.w3schools.com/js)
