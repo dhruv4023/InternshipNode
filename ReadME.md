@@ -45,10 +45,38 @@
 
 ## Node Tutorial
 
-1. Learn to Node.js (Reference - Tutorial Points and Other Sites)
+1. Introduction of Node.js
 2. Node modules
 3. REPL
 4. Node Package Manager
+5. Global Objects
+    - 1	Blob *
+    - 2	Buffer *
+    - 3	__dirname *
+    - 4	__filename *
+    - 5	btoa *
+    - 6	atob
+    - 7	clearImmediate(immediateObject) *
+    - 8	clearInterval(intervalObject) *
+    - 9	clearTimeout(timeoutObject) *
+    - 10	console *
+    - 11	crypto *
+    - 12	Event *
+    - 13	exports *
+    - 14	fetch *
+    - 15	module *
+    - 16	process *
+    - 16.1	child process *
+    - 17	require() *
+    - 18	setImmediate(callback[, ...args]) *
+    - 19	setInterval(callback, delay[, ...args]) *
+    - 20	setTimeout(callback, delay[, ...args]) *
+    - 21	URL *
+6. Utility Modules 
+    - 1	Path *
+    - 2	OS *
+    - 3	DNS *
+7.	Event loop
 
 ## Sources
 - YouTube Videos

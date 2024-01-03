@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Image with Blob</title>
+</head>
+
+<body>
+    <input type="file" accept="image/png" onchange="displayImage()">
+    <img id="img" />
+
+    <script>
+        function displayImage() {
+            const input = document.querySelector('input');
+            const imgElement = document.getElementById('img');
+
+            const file = input.files[0];
+            if (file) {
+                const fr = new FileReader();
+
+                fr.onload = function () {
+                    // Create a Blob from the loaded data
+                    const blob = new Blob([fr.result], { type: file.type });
+
+                    // Create a URL for the Blob
+                    const blobURL = URL.createObjectURL(blob);
+
+                    // Set the image source to the Blob URL
+                    imgElement.src = blobURL;
+
+                    // Optionally, revoke the Blob URL when no longer needed
+                    // URL.revokeObjectURL(blobURL);
+                };
+
+                fr.readAsArrayBuffer(file);
+            }
+        }
+    </script>
+</body>
+
+</html>
