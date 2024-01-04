@@ -77,6 +77,18 @@
     - 2	OS *
     - 3	DNS *
 7.	Event loop
+8.	Emitter *
+9.	Streams *
+10.	File System *
+11.	HTTP Module *
+12.	HTTPS Module *
+13.	Timer *
+14.	Error Handling *
+15.	Callbacks *
+16.	Promises *
+18.	Express Framework *
+19.	Database Design *
+20.	Database keys (PK, FK, UK, etc. ) *
 
 ## Sources
 - YouTube Videos
