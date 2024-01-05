@@ -89,6 +89,11 @@
 18.	Express Framework *
 19.	Database Design *
 20.	Database keys (PK, FK, UK, etc. ) *
+21. Database SQL queries *
+22. Node.Js Create Connection with MySQL *
+23. Node.js MySQL Create Database, Create Table, Drop Table *
+24. Node.js MySQL CRUD operation *
+25. Node js with MySQL join *
 
 ## Sources
 - YouTube Videos
