@@ -1,5 +1,5 @@
 var fs = require('fs');
-var rs = fs.createReadStream('./tmp.txt');
+var rs = fs.createReadStream('./data.txt');
 rs.on('open', function () {
   console.log('The file is open');
 });
