@@ -94,7 +94,14 @@
 23. Node.js MySQL Create Database, Create Table, Drop Table *
 24. Node.js MySQL CRUD operation *
 25. Node js with MySQL join *
-
+26.	Node.js Sequelize Query builder *
+27.	Node.js Create Connection with Sequelize *
+28.	Node.js Sequelize Models *
+29.	Node.js Sequelize CRUD Operations *
+30.	Node.js Sequelize Join *
+31.	Node.js Sequelize Migration *
+32.	Node.Js Create Connection with MongoDB *
+33.	Node.js MongoDB Create Database, Create Table, Drop Table *
 ## Sources
 - YouTube Videos
 - ChatGPT
