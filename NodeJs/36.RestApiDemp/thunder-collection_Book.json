@@ -1,0 +1,75 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "Book",
+    "dateExported": "2023-10-28T17:58:04.898Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "a35293d6-1994-45c3-8c0a-033c02cf7fbd",
+            "colId": "e8497ab2-1b4a-42f6-b061-154b076a9152",
+            "containerId": "",
+            "name": "Add",
+            "url": "http://localhost:5500/book/add",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2023-10-28T17:46:35.412Z",
+            "modified": "2023-10-28T17:49:01.589Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"ISBN\": 2154652,\r\n  \"title\": \"Tst Book 2\",\r\n  \"author\": \"ABc Xyz\"\r\n}\r\n",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "3bd5f8d9-388a-4322-bc56-f0a3b0223084",
+            "colId": "e8497ab2-1b4a-42f6-b061-154b076a9152",
+            "containerId": "",
+            "name": "Del",
+            "url": "http://localhost:5500/book/del/2154652",
+            "method": "DELETE",
+            "sortNum": 20000,
+            "created": "2023-10-28T17:49:13.243Z",
+            "modified": "2023-10-28T17:50:26.362Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "0495284a-73bc-455e-8f4f-f4784fb10f1d",
+            "colId": "e8497ab2-1b4a-42f6-b061-154b076a9152",
+            "containerId": "",
+            "name": "Update",
+            "url": "http://localhost:5500/book/update/91234567890",
+            "method": "PUT",
+            "sortNum": 30000,
+            "created": "2023-10-28T17:49:25.827Z",
+            "modified": "2023-10-28T17:56:45.947Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\r\n  \"title\": \"Tst Book 2\",\r\n  \"author\": \"Author 2\"\r\n}\r\n",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "f5e1fd63-031e-4406-ade5-a6f21b610ca6",
+            "colId": "e8497ab2-1b4a-42f6-b061-154b076a9152",
+            "containerId": "",
+            "name": "Get",
+            "url": "http://localhost:5500/book/get",
+            "method": "GET",
+            "sortNum": 40000,
+            "created": "2023-10-28T17:49:37.741Z",
+            "modified": "2023-10-28T17:49:49.746Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        }
+    ]
+}

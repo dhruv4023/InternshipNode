@@ -1,0 +1,54 @@
+p {
+  color: rgb(15, 15, 99);
+}
+nav {
+  background-color: black;
+}
+ul {
+  display: flex;
+}
+li {
+  padding: 10px;
+  list-style: none;
+}
+a {
+  color: aliceblue;
+  text-decoration: none;
+}
+body::before {
+  /* background: url("../bgimg.jpg") no-repeat center; */
+  content: "";
+  background-color: tomato;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  opacity: 0.8;
+}
+.container {
+  /* display: flex; */
+  text-align: center;
+  width: 400px;
+  margin: auto;
+  /* border: 1px solid black; */
+}
+#contact {
+  align-items: center;
+  /* text-align: center; */
+  display: flex;
+  /* justify-content: center; */
+  flex-direction: column;
+}
+input {
+  color: black;
+  font-weight: bold;
+  width: 200px;
+}
+#submit {
+  width: 75px;
+  background-color: black;
+  color: white;
+  
+}

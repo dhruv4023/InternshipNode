@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#{title}</title>
+</head>
+style 
+    include ../static/sty.css
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/">About</a></li>
+            <li><a href="/">Contact</a></li>
+        </ul>
+    </nav>
+    <p>#{content}</p>
+    <div class="container">
+        <h1>Fill the forms</h1>
+        <form action="/" method="post" id="contact">
+            <input type="text" name="name" id="name" placeholder="Enter your name here">
+            <input type="number" name="age" id="age" placeholder="Enter your age here">
+            <input type="email" name="email" id="email" placeholder="Enter your email here">
+            <input type="submit" value="submit" id="submit">
+        </form> 
+    </div>
+    <p>#{message}</p>
+</body>
+</html>

@@ -1,0 +1,15 @@
+// usersTbl.pug
+
+h1 User Table
+table(border="1")
+    thead
+        tr
+            th ID
+            th Name
+            th Age
+    tbody
+        each user in users
+            tr
+                td= user.id
+                td= user.name
+                td= user.age

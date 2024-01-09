@@ -3,7 +3,6 @@ const userColl = require("./UserModel")
 const addUserData = async (name, email) => {
 
     const userdata = new userColl({
-
         name: name,
         email: email,
     })
@@ -12,3 +11,6 @@ const addUserData = async (name, email) => {
 }
 
 addUserData("abc", "abc@mail.com")
+addUserData("xyz", "xyz@mail.com")
+addUserData("pqr", "pqr@mail.com")
+addUserData("mno", "mno@mail.com")
