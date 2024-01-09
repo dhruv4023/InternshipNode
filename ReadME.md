@@ -102,6 +102,13 @@
 31.	Node.js Sequelize Migration *
 32.	Node.Js Create Connection with MongoDB *
 33.	Node.js MongoDB Create Database, Create Table, Drop Table *
+34.	Node.js MongoDB CRUD operation *
+    - Node.js MongoDB CRUD operation using CLI *
+35.	Node.js MongoDB atlas CRUD operations *
+36.	Node js with REST API *
+37.	Template Engines EJS *
+38.	Template Engines PUG *
+
 ## Sources
 - YouTube Videos
 - ChatGPT
