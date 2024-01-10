@@ -108,6 +108,8 @@
 36.	Node js with REST API *
 37.	Template Engines EJS *
 38.	Template Engines PUG *
+39.	Web Module CRUD opration *
+40.	Login and User Authentication API *
 
 ## Sources
 - YouTube Videos
