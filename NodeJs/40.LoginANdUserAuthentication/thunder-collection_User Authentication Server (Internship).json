@@ -1,0 +1,71 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "User Authentication Server (Internship)",
+    "dateExported": "2024-01-10T08:49:21.438Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "2c79e05a-8069-4a35-9df7-ead920592ec6",
+            "colId": "883da41c-62a6-478a-8792-f760606f29d2",
+            "containerId": "",
+            "name": "Login",
+            "url": "http://127.0.0.1:5611/auth/login/",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-01-10T07:42:50.822Z",
+            "modified": "2024-01-10T07:58:44.909Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"uid\": \"dhruv4023\",\n  \"password\": \"abc123\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "870d0968-05eb-4cf3-b9aa-ee2968086019",
+            "colId": "883da41c-62a6-478a-8792-f760606f29d2",
+            "containerId": "",
+            "name": "Sign Up",
+            "url": "http://127.0.0.1:5611/auth/register/",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2024-01-10T07:42:50.825Z",
+            "modified": "2024-01-10T07:58:04.297Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"firstName\": \"Dhruv\",\n  \"lastName\": \"Patel\",\n  \"username\": \"dhruv4023\",\n  \"email\": \"dhruv20345@gmail.com\",\n  \"password\": \"abc123\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "a173936e-be41-4a21-b933-2f6ad7be1272",
+            "colId": "883da41c-62a6-478a-8792-f760606f29d2",
+            "containerId": "",
+            "name": "Update data",
+            "url": "http://127.0.0.1:5611/user/update/dhruv4023",
+            "method": "PUT",
+            "sortNum": 60000,
+            "created": "2024-01-10T08:46:17.462Z",
+            "modified": "2024-01-10T08:47:53.981Z",
+            "headers": [
+                {
+                    "name": "Authorization",
+                    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDQ4ODM1NjYsInVzZXJJZCI6ImRocnV2NDAyMyIsImlhdCI6MTcwNDg3NjM2Nn0.7-6vrmQAXP7PAqiiAYixRDMaVszZqR4LxiFraLqlCIU"
+                }
+            ],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"firstName\": \"xyz\",\n  \"lastName\": \"abc\",\n  \"username\": \"dhruv4023\",\n  \"email\": \"dhruv20345@gmail.com\"\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}
