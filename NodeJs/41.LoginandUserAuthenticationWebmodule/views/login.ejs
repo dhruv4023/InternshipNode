@@ -1,0 +1,25 @@
+<%- include("header") %>
+    <h1>Login</h1>
+
+    <div id="message-container">
+        <% if (typeof message==="defined" ) { %>
+            <p>
+                <%= message %>
+            </p>
+            <% } %>
+    </div>
+
+    <form action="http://127.0.0.1:5611/auth/login/" method="POST">
+        <div>
+            Username: <input type="text" id="uid" name="uid" required>
+        </div>
+        <div>
+            Password: <input type="password" id="password" name="password" required>
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </form>
+    <a href="signup">Sign up here</a>
+
+    <%- include("footer") %>

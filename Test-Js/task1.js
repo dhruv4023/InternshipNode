@@ -6,4 +6,4 @@ const users = [
     { age: 45, height: 167.2, "name": "mno", "id": 4 }
 ]
 
-console.log(users.sort((x, y) => x.id - y.id))
+console.log(users.sort((x, y) => y.id - x.id))

@@ -1,8 +1,9 @@
-const users = [
-    { age: 15, height: 162.2, "name": "Abc", "id": 2 },
-    { age: 25, height: 165.5, "name": "xyz", "id": 1 },
-    { age: 35, height: 170.3, "name": "pqr", "id": 3 },
-    { age: 45, height: 167.2, "name": "mno", "id": 4 }
-]
+const objects = [
+    { type: 'bird', name: 'peacock' },
+    { type: 'animal', name: 'cat' },
+    { type: 'vegetable', name: 'carrot' },
+    { type: 'mineral', name: 'gold' },
+];
 
-console.log(users.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1)))
+
+console.log(objects.sort((a, b) => (a.type.toLowerCase() < b.type.toLowerCase() ? -1 : 1)))
