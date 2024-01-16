@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+dotenv.config();
 import { sequelize } from "./db.js"
 // Load environment variables from a .env file
-dotenv.config();
 
 // Create an Express application
 const app = express();

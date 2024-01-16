@@ -53,7 +53,7 @@ export const loginControl = async (req, res) => {
 
     const token = generateJWTToken({
       data: { userId: user.id, admin: await Roles.getRoleNameById(user.roleId) === "admin" ? true : false },
-      secretKey: "123azbycx", //process.env.JWT_SECRET,
+      secretKey: process.env.JWT_SECRECT,
     });
 
     user.password = undefined;
