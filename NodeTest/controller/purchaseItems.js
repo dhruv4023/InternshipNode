@@ -1,7 +1,6 @@
 // controllers/purchaseController.js
 
-import { Op } from 'sequelize';
-import { PurchasedItems, Orders, sequelize, CartItems, Products, Users } from '../db.js';
+import { PurchasedItems, Orders, sequelize, CartItems, Products, Users, Carts } from '../db.js';
 import { getHistoryByUserId } from '../services/purchasedHistory.js';
 import { getUserIdsByName } from '../services/user.js';
 
@@ -38,6 +37,7 @@ export const purchaseItemUsingCart = async (req, res) => {
             // Remove the items from the cart
             await CartItems.destroy({ where: { cartId }, transaction: t });
 
+            await Carts.destroy({ where: { id: cartId }, transaction: t });
 
             res.status(201).json({ order, purchasedItems });
         });

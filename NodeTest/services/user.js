@@ -1,5 +1,5 @@
 // services/user.js
-import { Users } from '../db.js';
+import { Roles, Users } from '../db.js';
 import { Op } from 'sequelize';
 
 export const getUserData = async ({ id, delPassword = true }) => {
@@ -8,7 +8,7 @@ export const getUserData = async ({ id, delPassword = true }) => {
   try {
     const user = await Users.findOne({
       where: query,
-      attributes: { exclude: ['_id'] }, // Exclude the "_id" field from the result
+      include: [{model:Roles}],
     });
 
     if (user) {
@@ -30,7 +30,7 @@ export const getUserData = async ({ id, delPassword = true }) => {
 
 
 export
-  const getUserIdsByName = async ({firstName, lastName}) => {
+  const getUserIdsByName = async ({ firstName, lastName }) => {
     const users = await Users.findAll({
       where: {
         [Op.or]: [

@@ -9,11 +9,11 @@ const RoleModel = (sequelize, DataTypes) => {
     },
   });
 
-  Roles.associate = (models) => {
-    Roles.hasMany(models.Users, {
-      foreignKey: 'roleId', // Assuming 'roleId' is the foreign key in the 'Users' table that references 'Roles.id'
-    });
-  };
+  // Roles.associate = (models) => {
+  //   Roles.hasMany(models.Users, {
+  //     foreignKey: 'roleId', // Assuming 'roleId' is the foreign key in the 'Users' table that references 'Roles.id'
+  //   });
+  // };
 
   Roles.getRoleNameById = async (roleId) => {
     try {

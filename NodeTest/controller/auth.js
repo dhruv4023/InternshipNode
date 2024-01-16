@@ -52,7 +52,7 @@ export const loginControl = async (req, res) => {
       return res.status(400).json({ exist: false, mess: 'Invalid credentials' });
 
     const token = generateJWTToken({
-      data: { userId: user.id, admin: await Roles.getRoleNameById(user.roleId) === "admin" ? true : false },
+      data: { userId: user.id, admin: user.Role.name === "admin" ? true : false },
       secretKey: process.env.JWT_SECRECT,
     });
 

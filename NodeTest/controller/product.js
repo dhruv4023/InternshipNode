@@ -1,8 +1,9 @@
-import { Products } from '../db.js';
+import { Products, Users } from '../db.js';
 import { Op } from 'sequelize';
 
 export const addProduct = async (req, res) => {
     try {
+        const { userId } = req.tokenData
         const { name, description, price, quantity } = req.body;
 
         // Validate required fields
@@ -16,7 +17,7 @@ export const addProduct = async (req, res) => {
             description,
             price,
             quantity,
-            userId: req.tokenData.userId,
+            userId,
         });
 
         res.status(201).json(newProduct);
@@ -28,6 +29,7 @@ export const addProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
     try {
+        const { userId } = req.tokenData;
         const { productId } = req.params;
         const { name, description, price, quantity } = req.body;
 
@@ -38,7 +40,7 @@ export const updateProduct = async (req, res) => {
 
         // Update the product in the database
         const [updatedRowsCount] = await Products.update(
-            { name, description, price, quantity, userId: req.tokenData.userId },
+            { name, description, price, quantity, userId },
             { where: { id: productId } }
         );
 
@@ -85,6 +87,7 @@ export const getAllProducts = async (req, res) => {
             order,
             limit: parseInt(limit),
             offset: parseInt(offset),
+            include: [{ model: Users }]
         });
 
         res.json(products);
@@ -99,7 +102,7 @@ export const getSingleProduct = async (req, res) => {
         const { productId } = req.params;
 
         // Find a single product by its ID
-        const product = await Products.findByPk(productId);
+        const product = await Products.findByPk(productId, { include: [{ model: Users }] });
 
         if (!product) {
             return res.status(404).json({ error: 'Product not found' });
