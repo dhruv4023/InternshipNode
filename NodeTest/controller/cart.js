@@ -1,10 +1,11 @@
 // controllers/cartController.js
-import { Carts, CartItems, Products } from '../db.js'; // Import your models
+import { Carts, CartItems } from '../db.js';
 
 // Create a new cart
 export const createCart = async (req, res) => {
-    const userId = req.tokenData.userId
+    const userId = req.tokenData.userId;
     const { productId, quantity } = req.body;
+
     try {
         const newCart = await Carts.create({
             userId,
@@ -12,17 +13,19 @@ export const createCart = async (req, res) => {
                 {
                     productId,
                     quantity,
-                }
+                },
             ],
         }, {
             include: [{ model: CartItems }],
         });
-        res.status(201).json(newCart);
+
+        res.status(201).json({ message: 'Cart created successfully', cart: newCart });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 // Add items to a cart
 export const addItemsToCart = async (req, res) => {
     const { cartId } = req.params;
@@ -41,12 +44,13 @@ export const addItemsToCart = async (req, res) => {
             quantity: req.body.quantity,
         });
 
-        res.status(201).json(cartItem);
+        res.status(201).json({ message: 'Item added to cart successfully', cartItem });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
 // Remove items from a cart
 export const removeItemFromCart = async (req, res) => {
     const { cartItemId } = req.params;
@@ -71,7 +75,7 @@ export const removeItemFromCart = async (req, res) => {
             return res.json({ message: 'Cart and item removed successfully' });
         }
 
-        res.json({ message: 'Cart item removed successfully' });
+        res.status(200).json({ message: 'Cart item removed successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });

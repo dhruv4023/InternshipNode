@@ -1,9 +1,10 @@
 import { Products, Users } from '../db.js';
 import { Op } from 'sequelize';
 
+// Controller function to add a new product
 export const addProduct = async (req, res) => {
     try {
-        const { userId } = req.tokenData
+        const { userId } = req.tokenData;
         const { name, description, price, quantity } = req.body;
 
         // Validate required fields
@@ -20,13 +21,14 @@ export const addProduct = async (req, res) => {
             userId,
         });
 
-        res.status(201).json(newProduct);
+        res.status(201).json({ status: 'success', message: 'Product added successfully', product: newProduct });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
+// Controller function to update an existing product
 export const updateProduct = async (req, res) => {
     try {
         const { userId } = req.tokenData;
@@ -49,13 +51,14 @@ export const updateProduct = async (req, res) => {
         }
 
         const updatedProduct = await Products.findByPk(productId);
-        res.json(updatedProduct);
+        res.status(201).json({ status: 'success', message: 'Product updated successfully', product: updatedProduct });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
+// Controller function to delete a product
 export const deleteProduct = async (req, res) => {
     try {
         const { productId } = req.params;
@@ -74,6 +77,7 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
+// Controller function to get all products
 export const getAllProducts = async (req, res) => {
     try {
         // Implement pagination and filtering based on your requirements
@@ -90,13 +94,14 @@ export const getAllProducts = async (req, res) => {
             include: [{ model: Users }]
         });
 
-        res.json(products);
+        res.status(200).json({ status: 'success', products });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
+// Controller function to get a single product by ID
 export const getSingleProduct = async (req, res) => {
     try {
         const { productId } = req.params;
@@ -108,7 +113,7 @@ export const getSingleProduct = async (req, res) => {
             return res.status(404).json({ error: 'Product not found' });
         }
 
-        res.json(product);
+        res.status(200).json({ status: 'success', product });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });

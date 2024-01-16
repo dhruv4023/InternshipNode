@@ -12,7 +12,7 @@ export const getUsers = async (req, res) => {
     const cachedUser = cache.get(UID);
     if (cachedUser) {
       console.log('from cache');
-      // If cached data exists, return it
+      // If cached data exists, return it with a 200 (OK) status
       res.status(200).json(cachedUser);
     } else {
       console.log('from db');
@@ -22,12 +22,12 @@ export const getUsers = async (req, res) => {
       // Store the user data in the cache with a specified expiration time (e.g., 5 minutes)
       cache.put(UID, user, 5 * 60 * 1000); // 5 minutes in milliseconds
 
-      // Return the user data as a JSON response
+      // Return the user data as a JSON response with a 200 (OK) status
       res.status(200).json(user);
     }
   } catch (error) {
-    // Handle errors and return a 500 status if the user is not found
-    res.status(500).json("Internal server error");
+    // Handle errors and return a 500 (Internal Server Error) status with an error message
+    res.status(500).json({ status: 'error', message: 'Internal server error' });
   }
 };
 
@@ -41,7 +41,8 @@ export const updateUserData = async (req, res) => {
 
     // Check if the provided email is already used by another user
     if (user.email !== email && (await Users.findOne({ where: { email: email } }))) {
-      return res.status(400).json({ msg: 'Email already used!' });
+      // Return a 400 (Bad Request) status with an error message if the email is already used
+      return res.status(400).json({ status: 'error', message: 'Email already used!' });
     }
 
     // Update the user's data in the database
@@ -57,9 +58,12 @@ export const updateUserData = async (req, res) => {
     );
 
     const updatedUser = await Users.findOne({ where: { username: _id } }); // Retrieve the updated user data
-    res.status(200).json({ user: updatedUser }); // Send a 200 (OK) response with the updated user data
+
+    // Send a 200 (OK) response with the updated user data
+    res.status(200).json({ status: 'success', user: updatedUser });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: 'Server Error' }); // Send a 500 (Internal Server Error) response if there's an error
+    // Send a 500 (Internal Server Error) response with an error message if there's an error
+    res.status(500).json({ status: 'error', message: 'Server Error' });
   }
 };

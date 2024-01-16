@@ -4,11 +4,10 @@ import { PurchasedItems, Orders, sequelize, CartItems, Products, Users, Carts } 
 import { getHistoryByUserId } from '../services/purchasedHistory.js';
 import { getUserIdsByName } from '../services/user.js';
 
-
 // Purchase items using a cart
 export const purchaseItemUsingCart = async (req, res) => {
     const { cartId } = req.body;
-    const { userId } = req.tokenData
+    const { userId } = req.tokenData;
 
     try {
         await sequelize.transaction(async (t) => {
@@ -18,7 +17,7 @@ export const purchaseItemUsingCart = async (req, res) => {
             });
 
             if (!cartItems || cartItems.length === 0) {
-                return res.status(404).json({ error: 'Cart is empty' });
+                return res.status(404).json({ status: 'error', message: 'Cart is empty' });
             }
 
             // Create an order for the user
@@ -39,40 +38,41 @@ export const purchaseItemUsingCart = async (req, res) => {
 
             await Carts.destroy({ where: { id: cartId }, transaction: t });
 
-            res.status(201).json({ order, purchasedItems });
+            res.status(201).json({ status: 'success', message: 'Items purchased successfully', order, purchasedItems });
         });
     } catch (error) {
         console.error(error);
 
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     }
 };
+
 // Get purchase history for a user
 export const getPurchaseHistory = async (req, res) => {
-    console.log(req.tokenData)
     const { userId } = req.tokenData;
 
     try {
-        res.json(await getHistoryByUserId(userId));
+        const history = await getHistoryByUserId(userId);
+        res.status(200).json({ status: 'success', history });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     }
 };
 
-
+// Get order list by customer name
 export const getOrderListByCustomerName = async (req, res) => {
     try {
-        const allHistory = []
-        const uids = await getUserIdsByName(req.body)
-        console.log(uids)
-        for (const uid of uids) {
-            allHistory.push(...await getHistoryByUserId(uid))
-            console.log(uid)
+        const allHistory = [];
+        const userIds = await getUserIdsByName(req.body);
+
+        for (const userId of userIds) {
+            allHistory.push(...await getHistoryByUserId(userId));
         }
-        res.json(allHistory);
+
+        res.status(200).json({ status: 'success', history: allHistory });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     }
-}
+};
