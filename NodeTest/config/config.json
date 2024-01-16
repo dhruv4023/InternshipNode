@@ -1,0 +1,30 @@
+{
+  "development": {
+    "username": "root",
+    "password": "",
+    "database": "nodetst",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": 0,
+    "migrationStorage": "json",
+    "migrationStoragePath": "sequelize-meta.json",
+    "seederStorage": "json",
+    "seederStoragePath": "sequelize-seeder-meta.json", "migrations": "migrations"
+  },
+  "test": {
+    "username": "your_username",
+    "password": "your_password",
+    "database": "your_database",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": 0
+  },
+  "production": {
+    "username": "your_username",
+    "password": "your_password",
+    "database": "your_database",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": 0
+  }
+}
