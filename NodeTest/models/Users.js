@@ -41,31 +41,11 @@ const UserModel = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 2,
-      // references: {
-      //   model: 'Roles', // The name of the referenced model (it should be the same as the model name in define())
-      //   key: 'id', // The name of the referenced column in the referenced model
-      // },
     },
   }, {
     timestamps: true,
   });
-  // Users.associate = (models) => {
-  //   Users.hasMany(models.Orders, {
-  //     foreignKey: 'userId',
-  //   });
-  //   Users.hasMany(models.Products, {
-  //     foreignKey: 'userId',
-  //   });
-  //   Users.hasMany(models.Cart, {
-  //     foreignKey: 'userId',
-  //   });
 
-  //   Users.belongsTo(models.Roles, {
-  //     foreignKey: 'roleId',
-  //     onDelete: 'CASCADE',
-  //     onUpdate: 'CASCADE',
-  //   });
-  // };
   return Users;
 };
 

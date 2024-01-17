@@ -2,9 +2,8 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config(); // Load environment variables from a .env file
 import { sequelize } from "./db.js"
-// Load environment variables from a .env file
 
 // Create an Express application
 const app = express();
@@ -31,8 +30,6 @@ const routes = [authRoute, userRoute, productRoutes, orderRoutes, cartRoutes];
 routes.forEach((route) => {
     app.use(route);
 });
-
-
 
 const PORT = 3000
 sequelize.sync().then(() => {
