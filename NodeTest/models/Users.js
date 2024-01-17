@@ -41,6 +41,12 @@ const UserModel = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 2,
+      references: {
+        model: 'Roles',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
   }, {
     timestamps: true,
