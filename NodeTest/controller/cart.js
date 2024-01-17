@@ -72,7 +72,7 @@ export const removeItemFromCart = async (req, res) => {
         if (remainingItems === 0) {
             // If no items are left, delete the entire cart
             await cart.destroy();
-            return res.json({ message: 'Cart and item removed successfully' });
+            return res.status(200).json({ message: 'Cart and item removed successfully' });
         }
 
         res.status(200).json({ message: 'Cart item removed successfully' });
