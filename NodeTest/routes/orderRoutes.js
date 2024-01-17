@@ -3,7 +3,7 @@ import express from 'express';
 import {
     purchaseItemUsingCart,
     getPurchaseHistory, getOrderListByCustomerName
-} from '../controller/purchaseItems.js';
+} from '../controller/order.js';
 import { verifyToken } from '../middleware/auth.js';
 import { verifyAdminToken } from '../middleware/admin.js';
 

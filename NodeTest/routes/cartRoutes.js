@@ -4,6 +4,7 @@ import {
     createCart,
     addItemsToCart,
     removeItemFromCart,
+    getAllCarts,
 } from '../controller/cart.js';
 import { verifyToken } from '../middleware/auth.js';
 
@@ -13,6 +14,7 @@ router.use(verifyToken)
 
 // Cart routes
 router.post('/cart', createCart); // Create a new cart
+router.get('/cart', getAllCarts); // Create a new cart
 
 // Cart items routes
 router.post('/cart/:cartId/items', addItemsToCart); // Add items to a cart

@@ -1,5 +1,6 @@
 import { Products, Users } from '../db.js';
 import { Op } from 'sequelize';
+import RESPONSE from '../Response/Response.js';
 
 // Controller function to add a new product
 export const addProduct = async (req, res) => {
@@ -9,7 +10,7 @@ export const addProduct = async (req, res) => {
 
         // Validate required fields
         if (!name || !price || !quantity) {
-            return res.status(400).json({ error: 'Name, price, quantity are required fields' });
+            return RESPONSE.error(res, 3001, 400);
         }
 
         // Create a new product in the database
@@ -21,10 +22,10 @@ export const addProduct = async (req, res) => {
             userId,
         });
 
-        res.status(201).json({ status: 'success', message: 'Product added successfully', product: newProduct });
+        RESPONSE.success(res, 3002, { product: newProduct });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error);
     }
 };
 
@@ -35,26 +36,27 @@ export const updateProduct = async (req, res) => {
         const { productId } = req.params;
         const { name, description, price, quantity } = req.body;
 
+
         // Validate required fields
         if (!name || !price || !quantity) {
-            return res.status(400).json({ error: 'Name, price, quantity are required fields' });
+            return RESPONSE.error(res, 3001, 400);
         }
 
         // Update the product in the database
         const [updatedRowsCount] = await Products.update(
-            { name, description, price, quantity, userId },
-            { where: { id: productId } }
+            { name, description, price, quantity },
+            { where: { id: productId, userId: userId } }
         );
 
         if (updatedRowsCount === 0) {
-            return res.status(404).json({ error: 'Product not found' });
+            return RESPONSE.error(res, 3003, 404);
         }
 
         const updatedProduct = await Products.findByPk(productId);
-        res.status(201).json({ status: 'success', message: 'Product updated successfully', product: updatedProduct });
+        RESPONSE.success(res, 3004, { product: updatedProduct });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error);
     }
 };
 
@@ -62,18 +64,19 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
     try {
         const { productId } = req.params;
+        const { userId } = req.tokenData;
 
         // Delete the product from the database
-        const deletedRowCount = await Products.destroy({ where: { id: productId } });
+        const deletedRowCount = await Products.destroy({ where: { id: productId, userId: userId } });
 
         if (deletedRowCount === 0) {
-            return res.status(404).json({ error: 'Product not found' });
+            return RESPONSE.error(res, 3003, 404);
         }
 
-        res.status(204).send(); // 204 No Content for successful deletion
+        RESPONSE.success(res, 3005);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error);
     }
 };
 
@@ -94,10 +97,10 @@ export const getAllProducts = async (req, res) => {
             include: [{ model: Users }]
         });
 
-        res.status(200).json({ status: 'success', products });
+        RESPONSE.success(res, 3006, { products });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error);
     }
 };
 
@@ -110,12 +113,12 @@ export const getSingleProduct = async (req, res) => {
         const product = await Products.findByPk(productId, { include: [{ model: Users }] });
 
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+            return RESPONSE.error(res, 3003, 404);
         }
 
-        res.status(200).json({ status: 'success', product });
+        RESPONSE.success(res, 3007, { product });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error);
     }
 };

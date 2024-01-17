@@ -13,7 +13,7 @@ routes.get("/user/:UID", getUsers);
 
 // Define a PUT route for updating user data by ID, with token verification and file upload
 routes.put(
-  "/user/:id",
+  "/user/",
   verifyToken, // Middleware to verify JWT token
   updateUserData
 );

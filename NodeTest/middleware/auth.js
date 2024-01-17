@@ -1,15 +1,15 @@
 import jwt from "jsonwebtoken";
+import RESPONSE from "../Response/Response.js";
 
 // Middleware to verify user token
-export const verifyToken = async (req, res, next) => {
+export const verifyToken = (req, res, next) => {
   try {
     let token = req.header("Authorization");
 
     if (!token) {
-      // If no token is provided, return a 403 Forbidden response
-      return res.status(403).send({ msg: "Access denied" });
+      // If no token is provided, return a 403 Forbidden response     
+      RESPONSE.error(res, 5002, 403)
     }
-
     // Check if the token starts with "Bearer " and remove it
     if (token.startsWith("Bearer ")) {
       token = token.slice(7, token.length).trimLeft();
@@ -28,6 +28,7 @@ export const verifyToken = async (req, res, next) => {
     // Log the error for debugging purposes
     console.error(err);
     // Return a 500 Internal Server Error response with an error message
-    res.status(500).json({ msg: "Error in token verification", error: err.message });
+    RESPONSE.error(res, 9999, 500, err);
   }
 };
+

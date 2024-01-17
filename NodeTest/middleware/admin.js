@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import RESPONSE from "../Response/Response.js";
 
 // Middleware to verify admin token
 export const verifyAdminToken = async (req, res, next) => {
@@ -7,7 +8,7 @@ export const verifyAdminToken = async (req, res, next) => {
 
         if (!token) {
             // If no token is provided, return a 403 Forbidden response
-            return res.status(403).send({ msg: "Access denied" });
+            RESPONSE.error(res, 5001, 403)
         }
 
         // Check if the token starts with "Bearer " and remove it
@@ -24,16 +25,16 @@ export const verifyAdminToken = async (req, res, next) => {
         // Check if the user has admin privileges in the token
         if (!req.tokenData.admin) {
             // If not an admin, return a 403 Forbidden response
-            return res.status(403).json({ error: 'Unauthorized - Admin access required' });
+            RESPONSE.error(res, 5001, 403)
         }
 
         // Move to the next middleware or route handler
         next();
-    } catch (err) {
+    } catch (error) {
         // Handle token verification errors
         // Log the error for debugging purposes
-        console.error(err);
+        console.error(error);
         // Return a 500 Internal Server Error response with an error message
-        res.status(500).json({ msg: "Error in token verification", error: err.message });
+        RESPONSE.error(res, 9999, 500, error);
     }
 };

@@ -1,12 +1,12 @@
 // controllers/userController.js
 import bcrypt from 'bcrypt';
-
 import { Users } from '../db.js';
 import generateJWTToken from '../middleware/generateToken.js';
 import { getUserData } from '../services/user.js';
 import { hashValueGenerator } from '../services/generateHashValue.js';
+import RESPONSE from '../Response/Response.js';
 
-/* REGISTER USER */
+// Controller for user registration
 export const registerControl = async (req, res) => {
   try {
     // Extracting user registration data from the request body
@@ -16,7 +16,7 @@ export const registerControl = async (req, res) => {
     const user = await Users.findOne({ where: { email: email } });
     if (user) {
       // If user with the same email exists, return a 400 Bad Request response
-      return res.status(400).json({ status: 'error', message: 'User already exists!' });
+      return RESPONSE.error(res, 1003, 400);
     }
 
     // Generate a salt and hash the user's password
@@ -32,15 +32,15 @@ export const registerControl = async (req, res) => {
     });
 
     // Send a success response with the registered user's details
-    res.status(200).json({ status: 'success', message: 'User registered successfully', user: newUser });
+    RESPONSE.success(res, 1001, { user: newUser });
   } catch (error) {
     // If an error occurs during registration, log the error and send a 500 Internal Server Error response
     console.error(error);
-    res.status(500).json({ status: 'error', message: 'Something went wrong', error: error });
+    RESPONSE.error(res, 9999, 500, error);
   }
 };
 
-// Controller function for user login
+// Controller for user login
 export const loginControl = async (req, res) => {
   try {
     // Extracting user login data from the request body
@@ -51,14 +51,14 @@ export const loginControl = async (req, res) => {
 
     // If user doesn't exist, return a 400 Bad Request response
     if (!user)
-      return res.status(400).json({ status: 'error', exist: false, message: "User doesn't exist!" });
+      return RESPONSE.error(res, 1027, 400);
 
     // Compare the provided password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
 
     // If passwords don't match, return a 400 Bad Request response
     if (!isMatch)
-      return res.status(400).json({ status: 'error', exist: false, message: 'Invalid credentials' });
+      return RESPONSE.error(res, 1005, 400);
 
     // Generate a JWT token for the authenticated user
     const token = generateJWTToken({
@@ -70,10 +70,10 @@ export const loginControl = async (req, res) => {
     user.password = undefined;
 
     // Send a success response with the JWT token and user details
-    res.status(200).json({ status: 'success', exist: true, token, user });
+    RESPONSE.success(res, 1002, { token, user });
   } catch (error) {
     // If an error occurs during login, log the error and send a 500 Internal Server Error response
     console.log(error);
-    res.status(500).json({ status: 'error', exist: false, message: 'Failed to login' });
+    RESPONSE.error(res, 9999, 500, error);
   }
 };

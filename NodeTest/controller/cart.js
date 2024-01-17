@@ -1,9 +1,10 @@
 // controllers/cartController.js
-import { Carts, CartItems } from '../db.js';
+import { Carts, CartItems, Products, Users } from '../db.js';
+import RESPONSE from '../Response/Response.js';
 
 // Create a new cart
 export const createCart = async (req, res) => {
-    const userId = req.tokenData.userId;
+    const { userId } = req.tokenData;
     const { productId, quantity } = req.body;
 
     try {
@@ -19,22 +20,27 @@ export const createCart = async (req, res) => {
             include: [{ model: CartItems }],
         });
 
-        res.status(201).json({ message: 'Cart created successfully', cart: newCart });
+        RESPONSE.success(res, 2001, { cart: newCart }, 201);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error)
     }
 };
 
 // Add items to a cart
 export const addItemsToCart = async (req, res) => {
+    const { userId } = req.tokenData;
     const { cartId } = req.params;
 
     try {
         // Check if the cart exists
         const cart = await Carts.findByPk(cartId);
         if (!cart) {
-            return res.status(404).json({ error: 'Cart not found' });
+            return RESPONSE.error(res, 2003, 404);
+        }
+
+        if (cart.userId !== userId) {
+            return RESPONSE.error(res, 2007, 403);
         }
 
         // Create a new cart item
@@ -44,25 +50,30 @@ export const addItemsToCart = async (req, res) => {
             quantity: req.body.quantity,
         });
 
-        res.status(201).json({ message: 'Item added to cart successfully', cartItem });
+        RESPONSE.success(res, 2002, { cartItem }, 201);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error)
     }
 };
 
 // Remove items from a cart
 export const removeItemFromCart = async (req, res) => {
+    const { userId } = req.tokenData;
     const { cartItemId } = req.params;
 
     try {
         const cartItem = await CartItems.findByPk(cartItemId);
         if (!cartItem) {
-            return res.status(404).json({ error: 'Cart item not found' });
+            return RESPONSE.error(res, 2004, 404);
         }
 
         // Get the associated cart
         const cart = await Carts.findByPk(cartItem.cartId);
+
+        if (cart.userId !== userId) {
+            return RESPONSE.error(res, 2007, 403);
+        }
 
         // Delete the cart item
         await cartItem.destroy();
@@ -72,12 +83,54 @@ export const removeItemFromCart = async (req, res) => {
         if (remainingItems === 0) {
             // If no items are left, delete the entire cart
             await cart.destroy();
-            return res.status(200).json({ message: 'Cart and item removed successfully' });
+            return RESPONSE.success(res, 2005);
         }
 
-        res.status(200).json({ message: 'Cart item removed successfully' });
+        RESPONSE.success(res, 2006);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        RESPONSE.error(res, 9999, 500, error)
+    }
+};
+
+export const getAllCarts = async (req, res) => {
+    try {
+        const { userId } = req.tokenData;
+
+        const userCarts = await Carts.findAll({
+            where: {
+                userId: userId,
+            },
+            include: [
+                {
+                    model: CartItems,
+                    include: [
+                        {
+                            model: Products
+                            , include: [
+                                {
+                                    model: Users
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        });
+
+        // Return the carts in the response
+        return res.status(200).json({
+            success: true,
+            message: 'Carts retrieved successfully',
+            carts: userCarts,
+        });
+    } catch (error) {
+        // Handle errors
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error retrieving carts',
+            error: error.message,
+        });
     }
 };
