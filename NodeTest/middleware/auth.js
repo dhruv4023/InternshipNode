@@ -9,6 +9,7 @@ export const verifyToken = (req, res, next) => {
     if (!token) {
       // If no token is provided, return a 403 Forbidden response     
       RESPONSE.error(res, 5002, 403)
+      return
     }
     // Check if the token starts with "Bearer " and remove it
     if (token.startsWith("Bearer ")) {

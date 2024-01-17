@@ -9,6 +9,7 @@ export const verifyAdminToken = async (req, res, next) => {
         if (!token) {
             // If no token is provided, return a 403 Forbidden response
             RESPONSE.error(res, 5001, 403)
+            return
         }
 
         // Check if the token starts with "Bearer " and remove it
@@ -26,6 +27,7 @@ export const verifyAdminToken = async (req, res, next) => {
         if (!req.tokenData.admin) {
             // If not an admin, return a 403 Forbidden response
             RESPONSE.error(res, 5001, 403)
+            return
         }
 
         // Move to the next middleware or route handler
