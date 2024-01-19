@@ -1,23 +1,21 @@
 
-import { Op } from 'sequelize';
-import RESPONSE from '../Helper/Response.js';
+import { Op, where } from 'sequelize';
+import RESPONSE from '../helper/response.js';
 import db from '../models/index.js';
-import { getPaginatedResponse, getPaginationMetadata } from '../Helper/paginationHelper.js';
-import isValidBody from '../Helper/body_validation.js';
+import { getPaginatedResponse, getPaginationMetadata } from '../helper/paginationhelper.js';
+import isValidBody from '../helper/bodyValidation.js';
 
 const { Products, Users } = db
 // Controller function to add a new product
 export const addProduct = async (req, res) => {
     try {
+        const {
+            body: { name, description, price, quantity },
+            tokenData: { userId }
+        } = req;
 
-        const { userId } = req.tokenData;
-        const { name, description, price, quantity } = req.body;
-
-        if (await isValidBody(req.tokenData, res, {
+        if (await isValidBody({ ...req.tokenData, ...req.body }, res, {
             userId: 'required|integer|min:1',
-        })) return;
-
-        if (await isValidBody(req.body, res, {
             name: 'required|string|min:2|max:255',
             description: 'required|string|min:5|max:1000',
             price: 'required|numeric|min:0',
@@ -48,25 +46,20 @@ export const addProduct = async (req, res) => {
 // Controller function to update an existing product
 export const updateProduct = async (req, res) => {
     try {
-        const { userId } = req.tokenData;
-        const { productId } = req.params;
-        const { name, description, price, quantity } = req.body;
+        const {
+            tokenData: { userId },
+            params: { productId },
+            body: { name, description, price, quantity },
+        } = req;
 
-        if (await isValidBody(req.tokenData, res, {
+        if (await isValidBody({ ...req.params, ...req.body, ...req.tokenData }, res, {
             userId: 'required|integer|min:1',
-        })) return;
-
-        if (await isValidBody(req.params, res, {
             productId: 'required|integer|min:1',
-        })) return;
-
-        if (await isValidBody(req.body, res, {
             name: 'required|string|min:2|max:255',
             description: 'required|string|min:5|max:1000',
             price: 'required|numeric|min:0',
             quantity: 'required|integer|min:1',
         })) return;
-
 
         // Validate required fields
         if (!name || !price || !quantity) {
@@ -83,7 +76,7 @@ export const updateProduct = async (req, res) => {
             return RESPONSE.error(res, 3003, 404);
         }
 
-        const updatedProduct = await Products.findByPk(productId);
+        const updatedProduct = await Products.findOne({ where: { id: productId } });
         RESPONSE.success(res, 3004, { product: updatedProduct });
     } catch (error) {
         console.error(error);
@@ -94,14 +87,10 @@ export const updateProduct = async (req, res) => {
 // Controller function to delete a product
 export const deleteProduct = async (req, res) => {
     try {
-        const { productId } = req.params;
-        const { userId } = req.tokenData;
+        const { params: { productId }, tokenData: { userId } } = req;
 
-        if (await isValidBody(req.tokenData, res, {
+        if (await isValidBody({ ...req.tokenData, ...req.params }, res, {
             userId: 'required|integer|min:1',
-        })) return;
-
-        if (await isValidBody(req.params, res, {
             productId: 'required|integer|min:1',
         })) return;
 
@@ -122,8 +111,7 @@ export const deleteProduct = async (req, res) => {
 // Controller function to get all products
 export const getAllProducts = async (req, res) => {
     try {
-        // Implement pagination and filtering based on your requirements
-        const { name, orderBy } = req.query;
+        const { query: { name, orderBy } } = req;
 
         if (await isValidBody(req.params, res, {
             name: 'string',
@@ -153,14 +141,18 @@ export const getAllProducts = async (req, res) => {
 // Controller function to get a single product by ID
 export const getSingleProduct = async (req, res) => {
     try {
-        const { productId } = req.params;
+        const { params: productId } = req;
 
         if (await isValidBody(req.params, res, {
             productId: 'required|integer|min:1',
         })) return;
 
         // Find a single product by its ID
-        const product = await Products.findByPk(productId, { include: [{ model: Users }] });
+        const product = await Products.findOne(
+            {
+                where: { id: productId },
+                include: [{ model: Users }]
+            });
 
         if (!product) {
             return RESPONSE.error(res, 3003, 404);

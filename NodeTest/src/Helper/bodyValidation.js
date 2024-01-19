@@ -1,5 +1,5 @@
 import Validator from "validatorjs";
-import RESPONSE from "./Response.js";
+import RESPONSE from "./response.js";
 
 Validator.register('isEmailOrUsername', (value, requirement, attribute) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || /^[a-zA-Z0-9_]{3,20}$/.test(value);

@@ -1,16 +1,18 @@
 import bcrypt from 'bcrypt';
 import db from '../models/index.js';
-import RESPONSE from '../Helper/Response.js';
-import { hashValueGenerator } from '../Helper/generateHashValue.js';
-import { getUserData } from '../services/user.js';
-import generateJWTToken from '../Helper/generateToken.js';
-import isValidBody from '../Helper/body_validation.js';
-const { Users } = db;
+import RESPONSE from '../helper/response.js';
+import { hashValueGenerator } from '../helper/generateHashValue.js';
+import generateJWTToken from '../helper/generateToken.js';
+import isValidBody from '../helper/bodyValidation.js';
+import { Op } from 'sequelize';
+const { Users, Roles } = db;
 // Controller for user registration
 export const registerControl = async (req, res) => {
   try {
     // Extracting user registration data from the request body
-    const { firstName, lastName, username, email, password } = req.body;
+    const {
+      body: { firstName, lastName, username, email, password },
+    } = req;
 
     if (await isValidBody(req.body, res, {
       firstName: 'required|string',
@@ -21,7 +23,7 @@ export const registerControl = async (req, res) => {
     })) return;
 
     // Check if a user with the same email already exists
-    const user = await Users.findOne({ where: { email: email } });
+    const user = await Users.findOne({ where: { email } });
     if (user) {
       // If user with the same email exists, return a 400 Bad Request response
       return RESPONSE.error(res, 1003, 400);
@@ -32,10 +34,10 @@ export const registerControl = async (req, res) => {
 
     // Create a new User document in the database
     const newUser = await Users.create({
-      firstName: firstName,
-      lastName: lastName,
-      username: username,
-      email: email,
+      firstName,
+      lastName,
+      username,
+      email,
       password: passwordHash,
     });
 
@@ -51,17 +53,20 @@ export const registerControl = async (req, res) => {
 // Controller for user login
 export const loginControl = async (req, res) => {
   try {
-    const { uid, password } = req.body;
+    // Extracting user login data from the request body
+    const { body: { uid, password } } = req;
+
     if (await isValidBody(req.body, res, {
       uid: 'required|isEmailOrUsername',
       password: 'required|password',
     })) return;
 
-    // Extracting user login data from the request body
-
     // Retrieve user data for the provided username or email
-    const user = await getUserData({ id: uid, delPassword: false });
-
+    const user = await Users.findOne({
+      where: isNaN(uid) ? { [Op.or]: [{ email: uid }, { username: uid }] } : { id: uid },
+      include: [{ model: Roles }],
+      attributes: { include: ["password"] }
+    });
     // If user doesn't exist, return a 400 Bad Request response
     if (!user)
       return RESPONSE.error(res, 1027, 400);

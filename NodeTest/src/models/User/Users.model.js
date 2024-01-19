@@ -36,6 +36,7 @@ export default (sequelize, DataTypes) => {
       validate: {
         len: [5, Infinity],
       },
+
     },
     roleId: {
       type: DataTypes.INTEGER,
@@ -50,6 +51,9 @@ export default (sequelize, DataTypes) => {
     },
   }, {
     timestamps: true,
+    defaultScope: {
+      attributes: { exclude: ['password'] }, // Exclude the 'password' field by default
+    },
   });
 
   return Users;

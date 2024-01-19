@@ -13,7 +13,7 @@ export const getHistoryByUserId = async (userId) => {
         const purchaseHistory = await PurchasedItems.findAll({ where: { orderId: order.id } });
 
         for (const ph of purchaseHistory) {
-            const p = await Products.findByPk(ph.productId);
+            const p = await Products.findOne({ where: { id: ph.productId } });
 
             const dt = {
                 userId: userId,

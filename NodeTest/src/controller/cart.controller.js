@@ -1,22 +1,22 @@
 // controllers/cartController.js
 
 import db from '../models/index.js';
-import RESPONSE from '../Helper/Response.js';
-import isValidBody from '../Helper/body_validation.js';
+import RESPONSE from '../helper/response.js';
+import isValidBody from '../helper/bodyValidation.js';
 const { Carts, CartItems, Products, Users } = db;
 // Create a new cart
 export const createCart = async (req, res) => {
-    const { userId } = req.tokenData;
-    const { productId, quantity } = req.body;
+    const {
+        body: { productId, quantity },
+        tokenData: { userId }
+    } = req;
 
-    if (await isValidBody(req.tokenData, res, {
+    if (await isValidBody({ ...req.body, ...req.tokenData }, res, {
         userId: 'required|integer|min:1',
-    })) return;
-
-    if (await isValidBody(req.body, res, {
         productId: 'required|integer|min:1',
         quantity: 'required|integer|min:1',
     })) return;
+
 
     try {
         const newCart = await Carts.create({
@@ -40,20 +40,24 @@ export const createCart = async (req, res) => {
 
 // Add items to a cart
 export const addItemsToCart = async (req, res) => {
-    const { userId } = req.tokenData;
-    const { cartId } = req.params;
 
-    if (await isValidBody(req.tokenData, res, {
+    const {
+        tokenData: { userId },
+        params: { cartId },
+        body: { productId, quantity }
+    } = req
+
+    if (await isValidBody({ ...req.params, ...req.body, ...req.tokenData }, res, {
         userId: 'required|integer|min:1',
-    })) return;
-
-    if (await isValidBody(req.params, res, {
         cartId: 'required|integer|min:1',
+        productId: 'required|integer|min:1',
+        quantity: 'required|integer|min:1',
     })) return;
 
     try {
         // Check if the cart exists
-        const cart = await Carts.findByPk(cartId);
+        const cart = await Carts.findOne({ where: { id: cartId } });
+
         if (!cart) {
             return RESPONSE.error(res, 2003, 404);
         }
@@ -65,8 +69,8 @@ export const addItemsToCart = async (req, res) => {
         // Create a new cart item
         const cartItem = await CartItems.create({
             cartId: cart.id,
-            productId: req.body.productId,
-            quantity: req.body.quantity,
+            productId,
+            quantity,
         });
 
         RESPONSE.success(res, 2002, { cartItem }, 201);
@@ -78,52 +82,61 @@ export const addItemsToCart = async (req, res) => {
 
 // Remove items from a cart
 export const removeItemFromCart = async (req, res) => {
-    const { userId } = req.tokenData;
-    const { cartItemId } = req.params;
-
-    if (await isValidBody(req.tokenData, res, {
-        userId: 'required|integer|min:1',
-    })) return;
-
-    if (await isValidBody(req.params, res, {
-        cartItemId: 'required|integer|min:1',
-    })) return;
-
+    const t = await Sequelize.transaction(); // Start a transaction
 
     try {
-        const cartItem = await CartItems.findByPk(cartItemId);
+        const {
+            tokenData: { userId },
+            params: { cartItemId },
+        } = req;
+
+        if (await isValidBody({ ...req.params, ...req.tokenData }, res, {
+            userId: 'required|integer|min:1',
+            cartItemId: 'required|integer|min:1',
+        })) {
+            await t.rollback(); // Rollback the transaction on validation failure
+            return;
+        }
+
+        const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
+
         if (!cartItem) {
+            await t.rollback(); // Rollback the transaction if cart item not found
             return RESPONSE.error(res, 2004, 404);
         }
 
         // Get the associated cart
-        const cart = await Carts.findByPk(cartItem.cartId);
+        const cart = await Carts.findOne({ where: { id: cartItem.cartId }, transaction: t });
 
         if (cart.userId !== userId) {
+            await t.rollback(); // Rollback the transaction if user doesn't own the cart
             return RESPONSE.error(res, 2007, 403);
         }
 
         // Delete the cart item
-        await cartItem.destroy();
+        await cartItem.destroy({ transaction: t });
 
         // Check if the cart is empty after removing the item
-        const remainingItems = await CartItems.count({ where: { cartId: cart.id } });
+        const remainingItems = await CartItems.count({ where: { cartId: cart.id }, transaction: t });
         if (remainingItems === 0) {
             // If no items are left, delete the entire cart
-            await cart.destroy();
+            await cart.destroy({ transaction: t });
+            await t.commit(); // Commit the transaction
             return RESPONSE.success(res, 2005);
         }
 
+        await t.commit(); // Commit the transaction
         RESPONSE.success(res, 2006);
     } catch (error) {
         console.error(error);
-        RESPONSE.error(res, 9999, 500, error)
+        await t.rollback(); // Rollback the transaction on error
+        RESPONSE.error(res, 9999, 500, error);
     }
 };
 
 export const getAllCarts = async (req, res) => {
     try {
-        const { userId } = req.tokenData;
+        const { tokenData: { userId } } = req;
 
         if (await isValidBody(req.tokenData, res, {
             userId: 'required|integer|min:1',

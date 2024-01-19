@@ -3,24 +3,20 @@ import { getUserIdsByName } from '../services/user.js';
 
 
 import db from '../models/index.js';
-import RESPONSE from '../Helper/Response.js';
-import isValidBody from '../Helper/body_validation.js';
+import RESPONSE from '../helper/response.js';
+import isValidBody from '../helper/bodyValidation.js';
 
 const { PurchasedItems, Orders, sequelize, CartItems, Carts } = db;
 // Purchase items using a cart
 export const purchaseItemUsingCart = async (req, res) => {
-    const { cartId } = req.body;
-    const { userId } = req.tokenData;
-
-    if (await isValidBody(req.tokenData, res, {
-        userId: 'required|integer|min:1',
-    })) return;
-    
-    if (await isValidBody(req.body, res, {
-        cartId: 'required|integer|min:1',
-    })) return;
-
     try {
+        const { body: { cartId }, tokenData: { userId } } = req;
+
+        if (await isValidBody({ ...req.body, ...req.tokenData }, res, {
+            userId: 'required|integer|min:1',
+            cartId: 'required|integer|min:1',
+        })) return;
+
         await sequelize.transaction(async (t) => {
             // Get the items in the cart
             const cartItems = await CartItems.findAll({
@@ -59,14 +55,15 @@ export const purchaseItemUsingCart = async (req, res) => {
 
 // Get purchase history for a user
 export const getPurchaseHistory = async (req, res) => {
-    const { userId } = req.tokenData;
-
-    if (await isValidBody(req.tokenData, res, {
-        userId: 'required|integer|min:1',
-    })) return;
-
     try {
+        const { tokenData: userId } = req;
+
+        if (await isValidBody(req.tokenData, res, {
+            userId: 'required|integer|min:1',
+        })) return;
+
         const history = await getHistoryByUserId(userId);
+        
         RESPONSE.success(res, 4003, { history });
     } catch (error) {
         console.error(error);
@@ -76,7 +73,6 @@ export const getPurchaseHistory = async (req, res) => {
 
 // Get order list by customer name
 export const getOrderListByCustomerName = async (req, res) => {
-
     try {
         if (await isValidBody(req.body, res, {
             firstName: 'required|string',

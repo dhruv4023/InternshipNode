@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import RESPONSE from "../Helper/Response.js";
+import RESPONSE from "../helper/response.js";
 
 // Middleware to verify admin token
 export const verifyAdminToken = async (req, res, next) => {
