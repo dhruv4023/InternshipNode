@@ -17,6 +17,7 @@ const MESSAGES = {
     2005: 'Cart and item removed successfully',
     2006: 'Cart item removed successfully',
     2007: "Unauthorised cart user",
+    2008: "Carts retrieved successfully",
     
     3001: 'Name, price, quantity are required fields',
     3002: 'Product added successfully',

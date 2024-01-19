@@ -2,11 +2,21 @@
 
 import db from '../models/index.js';
 import RESPONSE from '../Helper/Response.js';
+import isValidBody from '../Helper/body_validation.js';
 const { Carts, CartItems, Products, Users } = db;
 // Create a new cart
 export const createCart = async (req, res) => {
     const { userId } = req.tokenData;
     const { productId, quantity } = req.body;
+
+    if (await isValidBody(req.tokenData, res, {
+        userId: 'required|integer|min:1',
+    })) return;
+
+    if (await isValidBody(req.body, res, {
+        productId: 'required|integer|min:1',
+        quantity: 'required|integer|min:1',
+    })) return;
 
     try {
         const newCart = await Carts.create({
@@ -32,6 +42,14 @@ export const createCart = async (req, res) => {
 export const addItemsToCart = async (req, res) => {
     const { userId } = req.tokenData;
     const { cartId } = req.params;
+
+    if (await isValidBody(req.tokenData, res, {
+        userId: 'required|integer|min:1',
+    })) return;
+
+    if (await isValidBody(req.params, res, {
+        cartId: 'required|integer|min:1',
+    })) return;
 
     try {
         // Check if the cart exists
@@ -62,6 +80,15 @@ export const addItemsToCart = async (req, res) => {
 export const removeItemFromCart = async (req, res) => {
     const { userId } = req.tokenData;
     const { cartItemId } = req.params;
+
+    if (await isValidBody(req.tokenData, res, {
+        userId: 'required|integer|min:1',
+    })) return;
+
+    if (await isValidBody(req.params, res, {
+        cartItemId: 'required|integer|min:1',
+    })) return;
+
 
     try {
         const cartItem = await CartItems.findByPk(cartItemId);
@@ -98,6 +125,10 @@ export const getAllCarts = async (req, res) => {
     try {
         const { userId } = req.tokenData;
 
+        if (await isValidBody(req.tokenData, res, {
+            userId: 'required|integer|min:1',
+        })) return;
+
         const userCarts = await Carts.findAll({
             where: {
                 userId: userId,
@@ -119,19 +150,10 @@ export const getAllCarts = async (req, res) => {
             ],
         });
 
-        // Return the carts in the response
-        return res.status(200).json({
-            success: true,
-            message: 'Carts retrieved successfully',
-            carts: userCarts,
-        });
+        RESPONSE.success(res, 2008, userCarts);
     } catch (error) {
         // Handle errors
         console.error(error);
-        return res.status(500).json({
-            success: false,
-            message: 'Error retrieving carts',
-            error: error.message,
-        });
+        RESPONSE.error(res, 9999, 500, error)
     }
 };

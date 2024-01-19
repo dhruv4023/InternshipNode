@@ -3,6 +3,7 @@ import cache from 'memory-cache';
 import db from '../models/index.js';
 import RESPONSE from '../Helper/Response.js';
 import { getUserData } from '../services/user.js';
+import isValidBody from '../Helper/body_validation.js';
 
 // Controller function to get user information by UID (User ID or username)
 export const getUsers = async (req, res) => {
@@ -38,6 +39,16 @@ export const updateUserData = async (req, res) => {
         const { userId } = req.tokenData; // Extract user ID from the request parameters
         const { firstName, lastName, email } = req.body; // Extract user data from the request body
         const user = await db.Users.findOne({ where: { id: userId } }); // Find the user by their username
+
+        if (await isValidBody(req.tokenData, res, {
+            userId: 'required|integer|min:1',
+        })) return;
+
+        if (await isValidBody(req.body, res, {
+            firstName: 'required|string|min:2|max:255',
+            username: 'required|string|min:3|max:20',
+            email: 'required|email',
+        })) return;
 
         // Check if the provided email is already used by another user
         if (user.email !== email && (await db.Users.findOne({ where: { email: email } }))) {

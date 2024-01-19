@@ -12,6 +12,14 @@ export const registerControl = async (req, res) => {
     // Extracting user registration data from the request body
     const { firstName, lastName, username, email, password } = req.body;
 
+    if (await isValidBody(req.body, res, {
+      firstName: 'required|string',
+      lastName: 'required|string',
+      username: 'required|string',
+      email: 'required|email',
+      password: 'required|password',
+    })) return;
+
     // Check if a user with the same email already exists
     const user = await Users.findOne({ where: { email: email } });
     if (user) {
@@ -44,10 +52,10 @@ export const registerControl = async (req, res) => {
 export const loginControl = async (req, res) => {
   try {
     const { uid, password } = req.body;
-    // isValidBody(req, res, {
-    //   uid: 'required|email,username,id',
-    //   password: 'required|password',
-    // })
+    if (await isValidBody(req.body, res, {
+      uid: 'required|isEmailOrUsername',
+      password: 'required|password',
+    })) return;
 
     // Extracting user login data from the request body
 

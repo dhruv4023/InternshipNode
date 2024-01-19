@@ -3,14 +3,26 @@ import { Op } from 'sequelize';
 import RESPONSE from '../Helper/Response.js';
 import db from '../models/index.js';
 import { getPaginatedResponse, getPaginationMetadata } from '../Helper/paginationHelper.js';
+import isValidBody from '../Helper/body_validation.js';
 
 const { Products, Users } = db
 // Controller function to add a new product
 export const addProduct = async (req, res) => {
     try {
-        
+
         const { userId } = req.tokenData;
         const { name, description, price, quantity } = req.body;
+
+        if (await isValidBody(req.tokenData, res, {
+            userId: 'required|integer|min:1',
+        })) return;
+
+        if (await isValidBody(req.body, res, {
+            name: 'required|string|min:2|max:255',
+            description: 'required|string|min:5|max:1000',
+            price: 'required|numeric|min:0',
+            quantity: 'required|integer|min:1',
+        })) return;
 
         // Validate required fields
         if (!name || !price || !quantity) {
@@ -39,6 +51,21 @@ export const updateProduct = async (req, res) => {
         const { userId } = req.tokenData;
         const { productId } = req.params;
         const { name, description, price, quantity } = req.body;
+
+        if (await isValidBody(req.tokenData, res, {
+            userId: 'required|integer|min:1',
+        })) return;
+
+        if (await isValidBody(req.params, res, {
+            productId: 'required|integer|min:1',
+        })) return;
+
+        if (await isValidBody(req.body, res, {
+            name: 'required|string|min:2|max:255',
+            description: 'required|string|min:5|max:1000',
+            price: 'required|numeric|min:0',
+            quantity: 'required|integer|min:1',
+        })) return;
 
 
         // Validate required fields
@@ -70,6 +97,14 @@ export const deleteProduct = async (req, res) => {
         const { productId } = req.params;
         const { userId } = req.tokenData;
 
+        if (await isValidBody(req.tokenData, res, {
+            userId: 'required|integer|min:1',
+        })) return;
+
+        if (await isValidBody(req.params, res, {
+            productId: 'required|integer|min:1',
+        })) return;
+
         // Delete the product from the database
         const deletedRowCount = await Products.destroy({ where: { id: productId, userId: userId } });
 
@@ -89,6 +124,13 @@ export const getAllProducts = async (req, res) => {
     try {
         // Implement pagination and filtering based on your requirements
         const { name, orderBy } = req.query;
+
+        if (await isValidBody(req.params, res, {
+            name: 'string',
+            orderBy: 'string',
+            page: 'integer|min:1',
+            limit: 'integer|min:1',
+        })) return;
 
         const { page, limit, offset } = getPaginationMetadata(req.query);
 
@@ -112,6 +154,10 @@ export const getAllProducts = async (req, res) => {
 export const getSingleProduct = async (req, res) => {
     try {
         const { productId } = req.params;
+
+        if (await isValidBody(req.params, res, {
+            productId: 'required|integer|min:1',
+        })) return;
 
         // Find a single product by its ID
         const product = await Products.findByPk(productId, { include: [{ model: Users }] });

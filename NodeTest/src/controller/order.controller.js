@@ -4,12 +4,21 @@ import { getUserIdsByName } from '../services/user.js';
 
 import db from '../models/index.js';
 import RESPONSE from '../Helper/Response.js';
+import isValidBody from '../Helper/body_validation.js';
 
 const { PurchasedItems, Orders, sequelize, CartItems, Carts } = db;
 // Purchase items using a cart
 export const purchaseItemUsingCart = async (req, res) => {
     const { cartId } = req.body;
     const { userId } = req.tokenData;
+
+    if (await isValidBody(req.tokenData, res, {
+        userId: 'required|integer|min:1',
+    })) return;
+    
+    if (await isValidBody(req.body, res, {
+        cartId: 'required|integer|min:1',
+    })) return;
 
     try {
         await sequelize.transaction(async (t) => {
@@ -52,6 +61,10 @@ export const purchaseItemUsingCart = async (req, res) => {
 export const getPurchaseHistory = async (req, res) => {
     const { userId } = req.tokenData;
 
+    if (await isValidBody(req.tokenData, res, {
+        userId: 'required|integer|min:1',
+    })) return;
+
     try {
         const history = await getHistoryByUserId(userId);
         RESPONSE.success(res, 4003, { history });
@@ -63,7 +76,13 @@ export const getPurchaseHistory = async (req, res) => {
 
 // Get order list by customer name
 export const getOrderListByCustomerName = async (req, res) => {
+
     try {
+        if (await isValidBody(req.body, res, {
+            firstName: 'required|string',
+            lastName: 'required|string',
+        })) return;
+
         const allHistory = [];
         const userIds = await getUserIdsByName(req.body);
 
