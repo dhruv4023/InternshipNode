@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-    const CartItems = sequelize.define('CartItems', {
+    const CartItemSchema = sequelize.define('cart_items', {
         cartId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -26,5 +26,5 @@ export default (sequelize, DataTypes) => {
         },
     });
 
-    return CartItems;
+    return CartItemSchema;
 };

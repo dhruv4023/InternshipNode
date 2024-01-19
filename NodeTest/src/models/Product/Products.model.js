@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-    const Products = sequelize.define('Products', {
+    const ProductSchema = sequelize.define('products', {
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -28,6 +28,6 @@ export default (sequelize, DataTypes) => {
         },
     });
 
-    return Products;
+    return ProductSchema;
 };
 

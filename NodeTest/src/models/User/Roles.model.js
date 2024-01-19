@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Roles = sequelize.define('Roles', {
+  const RoleSchema = sequelize.define('roles', {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -9,5 +9,5 @@ export default (sequelize, DataTypes) => {
     },
   });
 
-  return Roles;
+  return RoleSchema;
 };

@@ -1,6 +1,6 @@
 export default (sequelize, Sequelize) => {
     const ApiLogSchema = sequelize.define(
-        'ApiLogs',
+        'api_logs',
         {
             id: {
                 type: Sequelize.BIGINT,

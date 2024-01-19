@@ -39,19 +39,19 @@ const sequelize = new Sequelize(
     }
 })();
 
-import api_logs from './middleware/ApiLogs.model.js';
-import RolesModel from "./user/Roles.model.js";
-import UsersModel from "./user/Users.model.js";
-import ProductsModel from "./product/Products.model.js";
-import OrdersModel from "./order/Orders.model.js";
-import CartsModel from "./cart/Carts.model.js";
-import CartItemModel from "./cart/CartItem.model.js";
-import PurchasedItemsModel from "./order/PurchasedItems.model.js";
+import ApiLogsModel from "./middleware/apiLogs.model.js";
+import RolesModel from "./user/roles.model.js";
+import UsersModel from "./user/users.model.js";
+import ProductsModel from "./product/products.model.js";
+import OrdersModel from "./order/orders.model.js";
+import CartsModel from "./cart/carts.model.js";
+import CartItemModel from "./cart/cartItem.model.js";
+import PurchasedItemsModel from "./order/purchasedItems.model.js";
 
 const db = {
     Sequelize: Sequelize,
     sequelize: sequelize,
-    api_logs: api_logs(sequelize, Sequelize),
+    api_logs: ApiLogsModel(sequelize, Sequelize),
     Roles: RolesModel(sequelize, Sequelize),
     Users: UsersModel(sequelize, Sequelize),
     Products: ProductsModel(sequelize, Sequelize),

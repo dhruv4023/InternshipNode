@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-    const PurchasedItems = sequelize.define('PurchasedItems', {
+    const PurchasedItemSchema = sequelize.define('purchased_item', {
         productId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -28,5 +28,5 @@ export default (sequelize, DataTypes) => {
         timestamps: true,
     });
 
-    return PurchasedItems;
+    return PurchasedItemSchema;
 };

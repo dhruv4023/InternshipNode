@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-    const Orders = sequelize.define('Order', {
+    const OrderSchema = sequelize.define('orders', {
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -12,5 +12,5 @@ export default (sequelize, DataTypes) => {
         },
     });
 
-    return Orders;
+    return OrderSchema;
 };
