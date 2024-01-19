@@ -1,7 +1,7 @@
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.js';
 import { getUserData } from '../services/user.js';
-import isValidBody from '../helper/bodyValidation.js';
+import isValidData from '../helper/bodyValidation.js';
 
 // Controller function to get user information by UID (User ID or username)
 export const getUsers = async (req, res) => {
@@ -24,9 +24,10 @@ export const updateUserData = async (req, res) => {
 
         const user = await db.Users.findOne({ where: { id: userId } }); // Find the user by their username
 
-        if (await isValidBody({ ...req.body, ...req.tokenData }, res, {
+        if (await isValidData({ ...req.body, ...req.tokenData }, res, {
             userId: 'required|integer|min:1',
-            firstName: 'required|string|min:2|max:255',
+            firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
+            lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
             username: 'required|string|min:3|max:20',
             email: 'required|email',
         })) return;

@@ -32,6 +32,7 @@ const MESSAGES = {
     4002: 'Items purchased successfully.',
     4003: 'Purchase history retrieved successfully.',
     4004: 'Order list retrieved successfully.',
+    4005: "Unauthorised Purchaser",
 
     5001: 'Unauthorized - Admin access required',
     5002: "Unauthorised Access denied",

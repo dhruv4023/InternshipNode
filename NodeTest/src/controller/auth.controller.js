@@ -3,7 +3,7 @@ import db from '../models/index.js';
 import RESPONSE from '../helper/response.js';
 import { hashValueGenerator } from '../helper/generateHashValue.js';
 import generateJWTToken from '../helper/generateToken.js';
-import isValidBody from '../helper/bodyValidation.js';
+import isValidData from '../helper/bodyValidation.js';
 import { Op } from 'sequelize';
 const { Users, Roles } = db;
 // Controller for user registration
@@ -14,9 +14,9 @@ export const registerControl = async (req, res) => {
       body: { firstName, lastName, username, email, password },
     } = req;
 
-    if (await isValidBody(req.body, res, {
-      firstName: 'required|string',
-      lastName: 'required|string',
+    if (await isValidData(req.body, res, {
+      firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
+      lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
       username: 'required|string',
       email: 'required|email',
       password: 'required|password',
@@ -56,7 +56,7 @@ export const loginControl = async (req, res) => {
     // Extracting user login data from the request body
     const { body: { uid, password } } = req;
 
-    if (await isValidBody(req.body, res, {
+    if (await isValidData(req.body, res, {
       uid: 'required|isEmailOrUsername',
       password: 'required|password',
     })) return;
@@ -80,7 +80,7 @@ export const loginControl = async (req, res) => {
 
     // Generate a JWT token for the authenticated user
     const token = generateJWTToken({
-      data: { userId: user.id, admin: user.Role.name === "admin" ? true : false },
+      data: { userId: user.id, admin: user.role.name === "admin" ? true : false },
       secretKey: process.env.JWT_SECRECT,
     });
 

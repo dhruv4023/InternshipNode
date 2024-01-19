@@ -3,7 +3,7 @@ import { Op, where } from 'sequelize';
 import RESPONSE from '../helper/response.js';
 import db from '../models/index.js';
 import { getPaginatedResponse, getPaginationMetadata } from '../helper/paginationhelper.js';
-import isValidBody from '../helper/bodyValidation.js';
+import isValidData from '../helper/bodyValidation.js';
 
 const { Products, Users } = db
 // Controller function to add a new product
@@ -14,7 +14,7 @@ export const addProduct = async (req, res) => {
             tokenData: { userId }
         } = req;
 
-        if (await isValidBody({ ...req.tokenData, ...req.body }, res, {
+        if (await isValidData({ ...req.tokenData, ...req.body }, res, {
             userId: 'required|integer|min:1',
             name: 'required|string|min:2|max:255',
             description: 'required|string|min:5|max:1000',
@@ -52,7 +52,7 @@ export const updateProduct = async (req, res) => {
             body: { name, description, price, quantity },
         } = req;
 
-        if (await isValidBody({ ...req.params, ...req.body, ...req.tokenData }, res, {
+        if (await isValidData({ ...req.params, ...req.body, ...req.tokenData }, res, {
             userId: 'required|integer|min:1',
             productId: 'required|integer|min:1',
             name: 'required|string|min:2|max:255',
@@ -89,7 +89,7 @@ export const deleteProduct = async (req, res) => {
     try {
         const { params: { productId }, tokenData: { userId } } = req;
 
-        if (await isValidBody({ ...req.tokenData, ...req.params }, res, {
+        if (await isValidData({ ...req.tokenData, ...req.params }, res, {
             userId: 'required|integer|min:1',
             productId: 'required|integer|min:1',
         })) return;
@@ -113,7 +113,7 @@ export const getAllProducts = async (req, res) => {
     try {
         const { query: { name, orderBy } } = req;
 
-        if (await isValidBody(req.params, res, {
+        if (await isValidData(req.params, res, {
             name: 'string',
             orderBy: 'string',
             page: 'integer|min:1',
@@ -141,9 +141,9 @@ export const getAllProducts = async (req, res) => {
 // Controller function to get a single product by ID
 export const getSingleProduct = async (req, res) => {
     try {
-        const { params: productId } = req;
+        const { params: { productId } } = req;
 
-        if (await isValidBody(req.params, res, {
+        if (await isValidData(req.params, res, {
             productId: 'required|integer|min:1',
         })) return;
 
