@@ -1,9 +1,8 @@
-// controllers/cartController.js
-
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.js';
-import isValidBody from '../helper/bodyValidation.js';
-const { Carts, CartItems, Products, Users } = db;
+import isValidData from '../helper/bodyValidation.js';
+const { Carts, CartItems, Products, Users, sequelize } = db;
+
 // Create a new cart
 export const createCart = async (req, res) => {
     const {
@@ -11,17 +10,16 @@ export const createCart = async (req, res) => {
         tokenData: { userId }
     } = req;
 
-    if (await isValidBody({ ...req.body, ...req.tokenData }, res, {
+    if (await isValidData({ ...req.body, ...req.tokenData }, res, {
         userId: 'required|integer|min:1',
         productId: 'required|integer|min:1',
         quantity: 'required|integer|min:1',
     })) return;
 
-
     try {
         const newCart = await Carts.create({
             userId,
-            CartItems: [
+            cart_items: [
                 {
                     productId,
                     quantity,
@@ -47,7 +45,7 @@ export const addItemsToCart = async (req, res) => {
         body: { productId, quantity }
     } = req
 
-    if (await isValidBody({ ...req.params, ...req.body, ...req.tokenData }, res, {
+    if (await isValidData({ ...req.params, ...req.body, ...req.tokenData }, res, {
         userId: 'required|integer|min:1',
         cartId: 'required|integer|min:1',
         productId: 'required|integer|min:1',
@@ -82,7 +80,7 @@ export const addItemsToCart = async (req, res) => {
 
 // Remove items from a cart
 export const removeItemFromCart = async (req, res) => {
-    const t = await Sequelize.transaction(); // Start a transaction
+    const t = await sequelize.transaction(); // Start a transaction
 
     try {
         const {
@@ -90,7 +88,7 @@ export const removeItemFromCart = async (req, res) => {
             params: { cartItemId },
         } = req;
 
-        if (await isValidBody({ ...req.params, ...req.tokenData }, res, {
+        if (await isValidData({ ...req.params, ...req.tokenData }, res, {
             userId: 'required|integer|min:1',
             cartItemId: 'required|integer|min:1',
         })) {
@@ -138,7 +136,7 @@ export const getAllCarts = async (req, res) => {
     try {
         const { tokenData: { userId } } = req;
 
-        if (await isValidBody(req.tokenData, res, {
+        if (await isValidData(req.tokenData, res, {
             userId: 'required|integer|min:1',
         })) return;
 
