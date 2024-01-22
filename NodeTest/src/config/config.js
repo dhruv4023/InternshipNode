@@ -13,7 +13,7 @@ export default {
     },
     //  ssl Keys details
     certificate: {
-        privkey: process.env.SERVER_KEY  || 'path to priv key',
+        privkey: process.env.SERVER_KEY || 'path to priv key',
         fullchain: process.env.SERVER_CERT || 'path to fullchain key',
     },
     protocol: process.env.PROTOCOL || 'http',
@@ -21,4 +21,5 @@ export default {
     app_base_url: process.env.APP_BASE_URL || 'http://localhost:4040/api/v1',
     app_project_path: process.env.APP_PROJECT_PATH || 'http://localhost:4040',
     node_env: process.env.NODE_ENV || 'development',
+    jwt_secret: process.env.JWT_SECRET,
 };

@@ -81,7 +81,6 @@ export const loginControl = async (req, res) => {
     // Generate a JWT token for the authenticated user
     const token = generateJWTToken({
       data: { userId: user.id, admin: user.role.name === "admin" ? true : false },
-      secretKey: process.env.JWT_SECRECT,
     });
 
     // Hide the password in the user object before sending the response

@@ -3,16 +3,17 @@ import { Op } from 'sequelize';
 import db from '../models/index.js';
 const { Users, Roles } = db;
 
-export const getUserData = async (id) => {
+export const getUserData = async (id, attributes = {}) => {
   const query = isNaN(id) ? { [Op.or]: [{ email: id }, { username: id }] } : { id: id };
 
   try {
     const cachedUser = cache.get(id);
     if (cachedUser) {
-      console.log("cached")
+      // console.log("cached")
+      // console.log(cachedUser)
       return cachedUser;
     } else {
-      console.log("db")
+      // console.log("db")
 
       // If not cached, fetch the user data and store it in the cache
       // Store the user data in the cache with a specified expiration time (e.g., 5 minutes)
@@ -21,7 +22,7 @@ export const getUserData = async (id) => {
         include: [{ model: Roles }],
         attributes: attributes
       });
-
+      // console.log(user)
       cache.put(id, (user), 5 * 60 * 1000); // 5 minutes in milliseconds
       return user;
     }

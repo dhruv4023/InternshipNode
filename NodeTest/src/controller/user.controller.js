@@ -6,7 +6,7 @@ import isValidData from '../helper/bodyValidation.js';
 // Controller function to get user information by UID (User ID or username)
 export const getUsers = async (req, res) => {
     try {
-        const { params: UID } = req;
+        const { params: { UID } } = req;
 
         // Check if the user data is already cached
         const user = await getUserData(UID)

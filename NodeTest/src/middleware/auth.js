@@ -17,7 +17,7 @@ export const verifyToken = (req, res, next) => {
     }
 
     // Verify the token using the JWT_SECRET
-    const verified = jwt.verify(token, process.env.JWT_SECRECT);
+    const verified = jwt.verify(token, config.jwt_secret);
 
     // Attach the decoded token data to the request for future use
     req.tokenData = verified;

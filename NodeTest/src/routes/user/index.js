@@ -11,4 +11,3 @@ router.use('/user', userRoutes);
 
 // exporting router
 export default router;
-  
