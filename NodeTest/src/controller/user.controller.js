@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 
 import db from '../models/index.js';
-import RESPONSE from '../helper/response.js';
+import RESPONSE from '../helper/response.helper.js';
 
 const { Users, Roles } = db;
 

@@ -1,7 +1,7 @@
 import Validator from 'validatorjs';
 
 import db from '../models/index.js';
-import RESPONSE from '../helper/response.js';
+import RESPONSE from '../helper/response.helper.js';
 
 const { PurchasedItems, Orders, sequelize, CartItems, Carts, Products, Users } = db;
 

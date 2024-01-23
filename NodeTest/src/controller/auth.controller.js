@@ -3,12 +3,12 @@ import { Op } from 'sequelize';
 import Validator from "validatorjs";
 
 import db from '../models/index.js';
-import RESPONSE from '../helper/response.js';
-import { hashValueGenerator } from '../helper/generateHashValue.js';
-import generateJWTToken from '../helper/generateToken.js';
-import { uidPattern } from '../helper/custom_validation_patterns/uid_pattern.js';
-import { passwordPattern } from '../helper/custom_validation_patterns/password_pattern.js';
-import { namePattern } from '../helper/custom_validation_patterns/name_pattern.js';
+import RESPONSE from '../helper/response.helper.js';
+import { hashValueGenerator } from '../helper/generate_hash_value.helper.js';
+import generateJWTToken from '../helper/generate_token.helper.js';
+import { uidPattern } from '../helper/custom_validation_patterns/uid_pattern.helper.js';
+import { passwordPattern } from '../helper/custom_validation_patterns/password_pattern.helper.js';
+import { namePattern } from '../helper/custom_validation_patterns/name_pattern.helper.js';
 
 const { Users, Roles } = db;
 

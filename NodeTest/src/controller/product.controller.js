@@ -1,8 +1,8 @@
 import { Op } from 'sequelize';
 
-import RESPONSE from '../helper/response.js';
+import RESPONSE from '../helper/response.helper.js';
 import db from '../models/index.js';
-import { getPaginatedResponse, getPaginationMetadata } from '../helper/paginationhelper.js';
+import { getPaginatedResponse, getPaginationMetadata } from '../helper/pagination.helper.js';
 
 
 const { Products, Users } = db
