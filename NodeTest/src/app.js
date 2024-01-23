@@ -1,7 +1,9 @@
+// Import necessary modules
 import express from "express";
 import cors from "cors";
 import config from './config/config.js';
 import bodyParser from "body-parser";
+
 // Create an Express application
 const app = express();
 
@@ -16,16 +18,19 @@ app.get("/", (req, res) => {
   res.send("Server is running...");
 });
 
+// Import logger middleware
 import { logger } from "./middleware/logger.js";
 
+// Use logger middleware only in development environment
 if (config.node_env == 'development') {
   app.use(logger);
 }
 
-// importing routes
+// Import routes
 import routes_v1 from './routes/index.routes.js';
 
-// defining routes
+// Define routes for API version 1 under '/api/v1/'
 app.use('/api/v1/', routes_v1);
 
-export default app
+// Export the configured Express app
+export default app;
