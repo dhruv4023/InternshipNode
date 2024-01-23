@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import RESPONSE from '../helper/response.helper.js';
 import db from '../models/index.js';
 import { getPaginatedResponse, getPaginationMetadata } from '../helper/pagination.helper.js';
+import Validator from 'validatorjs';
 
 
 const { Products, Users } = db
