@@ -161,21 +161,13 @@ export const getAllCarts = async (req, res) => {
             where: {
                 userId: userId,
             },
-            include: [
-                {
-                    model: CartItems,
-                    include: [
-                        {
-                            model: Products
-                            , include: [
-                                {
-                                    model: Users
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
+            include: [{
+                model: CartItems,
+                include: [{
+                    model: Products,
+                    include: [{ model: Users }],
+                }],
+            }],
         });
 
         RESPONSE.success(res, 2008, userCarts);

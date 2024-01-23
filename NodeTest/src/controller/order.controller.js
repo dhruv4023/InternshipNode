@@ -23,18 +23,19 @@ export const orderProduct = async (req, res) => {
     }
 
     try {
-        await sequelize.transaction(async (t) => {
+        // Begin the transaction
+        const t = await sequelize.transaction();
+
+        try {
             // Check if the product exists
             const product = await Products.findOne({ where: { id: productId }, transaction: t });
 
-            if (!product) {
+            if (!product)
                 return RESPONSE.error(res, 4003, 404);
-            }
 
             // Check if the product quantity is sufficient
-            if (product.quantity < quantity) {
+            if (product.quantity < quantity)
                 return RESPONSE.error(res, 4006, 400);
-            }
 
             // Create an order for the user
             const order = await Orders.create({ userId }, { transaction: t });
@@ -46,8 +47,15 @@ export const orderProduct = async (req, res) => {
                 quantity,
             }, { transaction: t });
 
+            // Commit the transaction if everything is successful
+            await t.commit();
+
             RESPONSE.success(res, 4004, { order, purchasedItem }, 201);
-        });
+        } catch (error) {
+            // Rollback the transaction if there is an error
+            await t.rollback();
+            RESPONSE.error(res, 9999, 500, error);
+        }
     } catch (error) {
         RESPONSE.error(res, 9999, 500, error);
     }
@@ -70,9 +78,8 @@ export const purchaseItemUsingCart = async (req, res) => {
     try {
         // Check if the specified cart exists for the user
         const cart = await Carts.findOne({ where: { id: cartId, userId } });
-        if (!cart) {
+        if (!cart)
             return RESPONSE.error(res, 4005, 404);
-        }
 
 
         try {
@@ -85,6 +92,7 @@ export const purchaseItemUsingCart = async (req, res) => {
                 await t.rollback(); // Rollback the transaction
                 return RESPONSE.error(res, 4001, 404);
             }
+
             const order = await Orders.create({ userId }, { transaction: t });
 
             // Create purchased items from the cart items
@@ -154,9 +162,8 @@ export const getOrderListByCustomerName = async (req, res) => {
         const allHistory = [];
         const userIds = await getUserIdsByName(req.body);
 
-        for (const userId of userIds) {
+        for (const userId of userIds)
             allHistory.push(...await getHistoryByUserId(userId));
-        }
 
         RESPONSE.success(res, 4004, { history: allHistory });
     } catch (error) {
@@ -167,9 +174,7 @@ export const getOrderListByCustomerName = async (req, res) => {
 
 const getHistoryByUserId = async (userId) => {
     // Find all orders and associated purchased items for the user
-    const orderIds = await Orders.findAll({
-        where: { userId },
-    });
+    const orderIds = await Orders.findAll({ where: { userId } });
 
     const history = [];
 

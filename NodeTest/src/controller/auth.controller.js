@@ -14,12 +14,13 @@ const { Users, Roles } = db;
 
 // Controller for user registration
 export const registerControl = async (req, res) => {
-  namePattern();
-  passwordPattern();
+  // Extracting user registration data from the request body
   const {
     body: { firstName, lastName, username, email, password },
   } = req;
 
+  namePattern(); // add custom validation - name 
+  passwordPattern(); // add custom validation - password
   let validation = new Validator(req.body, {
     firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
     lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
@@ -35,7 +36,6 @@ export const registerControl = async (req, res) => {
 
   try {
 
-    // Extracting user registration data from the request body
     // Check if a user with the same email already exists
     const user = await Users.findOne({ where: { email } });
 
@@ -67,8 +67,8 @@ export const registerControl = async (req, res) => {
 
 // Controller for user login
 export const loginControl = async (req, res) => {
-  uidPattern();
-  passwordPattern();
+  uidPattern(); // add custom validation - uid 
+  passwordPattern(); // add custom validation - password
   // Extracting user login data from the request body
   const { body: { uid, password } } = req;
 

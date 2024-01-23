@@ -5,8 +5,8 @@ import db from '../models/index.js';
 import { getPaginatedResponse, getPaginationMetadata } from '../helper/pagination.helper.js';
 import Validator from 'validatorjs';
 
-
 const { Products, Users } = db
+
 // Controller function to add a new product
 export const addProduct = async (req, res) => {
     const {
@@ -74,9 +74,8 @@ export const updateProduct = async (req, res) => {
     try {
 
         // Validate required fields
-        if (!name || !price || !quantity) {
+        if (!name || !price || !quantity)
             return RESPONSE.error(res, 3001, 400);
-        }
 
         // Update the product in the database
         const [updatedRowsCount] = await Products.update(
@@ -84,9 +83,8 @@ export const updateProduct = async (req, res) => {
             { where: { id: productId, userId: userId } }
         );
 
-        if (updatedRowsCount === 0) {
+        if (updatedRowsCount === 0)
             return RESPONSE.error(res, 3003, 404);
-        }
 
         const updatedProduct = await Products.findOne({ where: { id: productId } });
         RESPONSE.success(res, 3004, { product: updatedProduct });
@@ -118,9 +116,8 @@ export const deleteProduct = async (req, res) => {
         // Delete the product from the database
         const deletedRowCount = await Products.destroy({ where: { id: productId, userId: userId } });
 
-        if (deletedRowCount === 0) {
+        if (deletedRowCount === 0)
             return RESPONSE.error(res, 3003, 404);
-        }
 
         RESPONSE.success(res, 3005);
     } catch (error) {
@@ -180,15 +177,13 @@ export const getSingleProduct = async (req, res) => {
     try {
 
         // Find a single product by its ID
-        const product = await Products.findOne(
-            {
-                where: { id: productId },
-                include: [{ model: Users }]
-            });
+        const product = await Products.findOne({
+            where: { id: productId },
+            include: [{ model: Users }]
+        });
 
-        if (!product) {
+        if (!product)
             return RESPONSE.error(res, 3003, 404);
-        }
 
         RESPONSE.success(res, 3007, { product });
     } catch (error) {

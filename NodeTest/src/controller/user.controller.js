@@ -44,14 +44,14 @@ export const updateUserData = async (req, res) => {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-    
+
     try {
 
         // Check if the provided email is already used by another user
-        if (user.email !== email && (await Users.findOne({ where: { email } }))) {
+        if (user.email !== email && (await Users.findOne({ where: { email } })))
             // Return a 400 (Bad Request) status with an error message if the email is already used
-            RESPONSE.error(res, 1004, 400);
-        }
+            return RESPONSE.error(res, 1004, 400);
+
 
         // Update the user's data in the database
         await Users.update(
