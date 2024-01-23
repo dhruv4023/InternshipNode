@@ -18,7 +18,7 @@ const MESSAGES = {
     2006: 'Cart item removed successfully',
     2007: "Unauthorised cart user",
     2008: "Carts retrieved successfully",
-    
+
     3001: 'Name, price, quantity are required fields',
     3002: 'Product added successfully',
     3003: 'Product not found as per productId and userId',
@@ -33,9 +33,11 @@ const MESSAGES = {
     4003: 'Purchase history retrieved successfully.',
     4004: 'Order list retrieved successfully.',
     4005: "Unauthorised Purchaser",
-
+    4006: 'Insufficient quantity available for the product.',
+    4007: 'Insufficient quantity available for one or more items.',
     5001: 'Unauthorized - Admin access required',
     5002: "Unauthorised Access denied",
+    5003: "Your session expired! Please login again",
 
     9999: 'Internal Server Error',
 };

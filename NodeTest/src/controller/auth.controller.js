@@ -24,6 +24,7 @@ export const registerControl = async (req, res) => {
 
     // Check if a user with the same email already exists
     const user = await Users.findOne({ where: { email } });
+    
     if (user) {
       // If user with the same email exists, return a 400 Bad Request response
       return RESPONSE.error(res, 1003, 400);
@@ -44,8 +45,8 @@ export const registerControl = async (req, res) => {
     // Send a success response with the registered user's details
     RESPONSE.success(res, 1001, { user: newUser });
   } catch (error) {
+
     // If an error occurs during registration, log the error and send a 500 Internal Server Error response
-    console.error(error);
     RESPONSE.error(res, 9999, 500, error);
   }
 };
@@ -67,6 +68,7 @@ export const loginControl = async (req, res) => {
       include: [{ model: Roles }],
       attributes: { include: ["password"] }
     });
+
     // If user doesn't exist, return a 400 Bad Request response
     if (!user)
       return RESPONSE.error(res, 1027, 400);
@@ -89,8 +91,8 @@ export const loginControl = async (req, res) => {
     // Send a success response with the JWT token and user details
     RESPONSE.success(res, 1002, { token, user });
   } catch (error) {
+
     // If an error occurs during login, log the error and send a 500 Internal Server Error response
-    console.log(error);
     RESPONSE.error(res, 9999, 500, error);
   }
 };

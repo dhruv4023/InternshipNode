@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import RESPONSE from "../helper/response.js";
+import config from "../config/config.js";
 
 // Middleware to verify user token
 export const verifyToken = (req, res, next) => {

@@ -2,15 +2,15 @@
 import express from "express";
 import cors from "cors";
 import config from './config/config.js';
-import bodyParser from "body-parser";
+// import bodyParser from "body-parser";
 
 // Create an Express application
 const app = express();
 
 // Middleware setup
 app.use(express.json()); // Parse JSON request bodies
-app.use(bodyParser.json({ limit: "30mb", extended: true })); // Parse JSON requests with size limit
-app.use(bodyParser.urlencoded({ limit: "30mb", extended: true })); // Parse URL-encoded requests with size limit
+// app.use(bodyParser.json({ limit: "30mb", extended: true })); // Parse JSON requests with size limit
+// app.use(bodyParser.urlencoded({ limit: "30mb", extended: true })); // Parse URL-encoded requests with size limit
 app.use(cors()); // Configure CORS for allowed origins
 
 // Root route that returns a simple "Server is running..." message

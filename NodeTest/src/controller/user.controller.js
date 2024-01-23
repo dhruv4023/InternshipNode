@@ -1,6 +1,6 @@
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.js';
-import { getUserData } from '../services/user.js';
+import { getUserData } from '../services/user.service.js';
 import isValidData from '../helper/bodyValidation.js';
 
 // Controller function to get user information by UID (User ID or username)
@@ -33,7 +33,7 @@ export const updateUserData = async (req, res) => {
         })) return;
 
         // Check if the provided email is already used by another user
-        if (user.email !== email && (await db.Users.findOne({ where: { email: email } }))) {
+        if (user.email !== email && (await db.Users.findOne({ where: { email } }))) {
             // Return a 400 (Bad Request) status with an error message if the email is already used
             RESPONSE.error(res, 1004, 400);
         }

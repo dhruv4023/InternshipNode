@@ -1,5 +1,4 @@
-
-import { Op, where } from 'sequelize';
+import { Op } from 'sequelize';
 import RESPONSE from '../helper/response.js';
 import db from '../models/index.js';
 import { getPaginatedResponse, getPaginationMetadata } from '../helper/paginationhelper.js';
@@ -14,6 +13,7 @@ export const addProduct = async (req, res) => {
             tokenData: { userId }
         } = req;
 
+        // Validate request data
         if (await isValidData({ ...req.tokenData, ...req.body }, res, {
             userId: 'required|integer|min:1',
             name: 'required|string|min:2|max:255',
@@ -38,7 +38,6 @@ export const addProduct = async (req, res) => {
 
         RESPONSE.success(res, 3002, { product: newProduct });
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error);
     }
 };
@@ -52,6 +51,7 @@ export const updateProduct = async (req, res) => {
             body: { name, description, price, quantity },
         } = req;
 
+        // Validate request data
         if (await isValidData({ ...req.params, ...req.body, ...req.tokenData }, res, {
             userId: 'required|integer|min:1',
             productId: 'required|integer|min:1',
@@ -79,7 +79,6 @@ export const updateProduct = async (req, res) => {
         const updatedProduct = await Products.findOne({ where: { id: productId } });
         RESPONSE.success(res, 3004, { product: updatedProduct });
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error);
     }
 };
@@ -87,8 +86,12 @@ export const updateProduct = async (req, res) => {
 // Controller function to delete a product
 export const deleteProduct = async (req, res) => {
     try {
-        const { params: { productId }, tokenData: { userId } } = req;
+        const {
+            params: { productId },
+            tokenData: { userId }
+        } = req;
 
+        // Validate request data
         if (await isValidData({ ...req.tokenData, ...req.params }, res, {
             userId: 'required|integer|min:1',
             productId: 'required|integer|min:1',
@@ -103,7 +106,6 @@ export const deleteProduct = async (req, res) => {
 
         RESPONSE.success(res, 3005);
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error);
     }
 };
@@ -113,6 +115,7 @@ export const getAllProducts = async (req, res) => {
     try {
         const { query: { name, orderBy } } = req;
 
+        // Validate request data
         if (await isValidData(req.params, res, {
             name: 'string',
             orderBy: 'string',
@@ -131,9 +134,9 @@ export const getAllProducts = async (req, res) => {
             offset: parseInt(offset),
             include: [{ model: Users }]
         });
+
         RESPONSE.success(res, 3006, getPaginatedResponse(products, page, limit));
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error);
     }
 };
@@ -143,6 +146,7 @@ export const getSingleProduct = async (req, res) => {
     try {
         const { params: { productId } } = req;
 
+        // Validate request data
         if (await isValidData(req.params, res, {
             productId: 'required|integer|min:1',
         })) return;
@@ -160,7 +164,6 @@ export const getSingleProduct = async (req, res) => {
 
         RESPONSE.success(res, 3007, { product });
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error);
     }
 };
