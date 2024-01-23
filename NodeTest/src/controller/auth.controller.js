@@ -1,30 +1,44 @@
 import bcrypt from 'bcrypt';
+import { Op } from 'sequelize';
+import Validator from "validatorjs";
+
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.js';
 import { hashValueGenerator } from '../helper/generateHashValue.js';
 import generateJWTToken from '../helper/generateToken.js';
-import isValidData from '../helper/bodyValidation.js';
-import { Op } from 'sequelize';
+import { uidPattern } from '../helper/custom_validation_patterns/uid_pattern.js';
+import { passwordPattern } from '../helper/custom_validation_patterns/password_pattern.js';
+import { namePattern } from '../helper/custom_validation_patterns/name_pattern.js';
+
 const { Users, Roles } = db;
+
 // Controller for user registration
 export const registerControl = async (req, res) => {
+  namePattern();
+  passwordPattern();
+  const {
+    body: { firstName, lastName, username, email, password },
+  } = req;
+
+  let validation = new Validator(req.body, {
+    firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
+    lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
+    username: 'required|string',
+    email: 'required|email',
+    password: 'required|password',
+  });
+
+  if (validation.fails()) {
+    const firstMessage = Object.keys(validation.errors.all())[0];
+    return RESPONSE.error(res, validation.errors.first(firstMessage));
+  }
+
   try {
+
     // Extracting user registration data from the request body
-    const {
-      body: { firstName, lastName, username, email, password },
-    } = req;
-
-    if (await isValidData(req.body, res, {
-      firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
-      lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
-      username: 'required|string',
-      email: 'required|email',
-      password: 'required|password',
-    })) return;
-
     // Check if a user with the same email already exists
     const user = await Users.findOne({ where: { email } });
-    
+
     if (user) {
       // If user with the same email exists, return a 400 Bad Request response
       return RESPONSE.error(res, 1003, 400);
@@ -53,14 +67,23 @@ export const registerControl = async (req, res) => {
 
 // Controller for user login
 export const loginControl = async (req, res) => {
-  try {
-    // Extracting user login data from the request body
-    const { body: { uid, password } } = req;
+  uidPattern();
+  passwordPattern();
+  // Extracting user login data from the request body
+  const { body: { uid, password } } = req;
 
-    if (await isValidData(req.body, res, {
-      uid: 'required|isEmailOrUsername',
-      password: 'required|password',
-    })) return;
+  let validation = new Validator(req.body, {
+    uid: 'required|isEmailOrUsername',
+    password: 'required|password',
+  });
+
+  if (validation.fails()) {
+    const firstMessage = Object.keys(validation.errors.all())[0];
+    return RESPONSE.error(res, validation.errors.first(firstMessage));
+  }
+
+  try {
+
 
     // Retrieve user data for the provided username or email
     const user = await Users.findOne({

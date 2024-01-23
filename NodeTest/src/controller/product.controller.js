@@ -1,31 +1,36 @@
 import { Op } from 'sequelize';
+
 import RESPONSE from '../helper/response.js';
 import db from '../models/index.js';
 import { getPaginatedResponse, getPaginationMetadata } from '../helper/paginationhelper.js';
-import isValidData from '../helper/bodyValidation.js';
+
 
 const { Products, Users } = db
 // Controller function to add a new product
 export const addProduct = async (req, res) => {
-    try {
-        const {
-            body: { name, description, price, quantity },
-            tokenData: { userId }
-        } = req;
+    const {
+        body: { name, description, price, quantity },
+        tokenData: { userId }
+    } = req;
 
-        // Validate request data
-        if (await isValidData({ ...req.tokenData, ...req.body }, res, {
-            userId: 'required|integer|min:1',
-            name: 'required|string|min:2|max:255',
-            description: 'required|string|min:5|max:1000',
-            price: 'required|numeric|min:0',
-            quantity: 'required|integer|min:1',
-        })) return;
+    let validation = new Validator({ ...req.tokenData, ...req.body }, {
+        name: 'required|string|min:2|max:255',
+        description: 'required|string|min:5|max:1000',
+        price: 'required|numeric|min:0',
+        quantity: 'required|integer|min:1',
+        userId: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
+    try {
 
         // Validate required fields
-        if (!name || !price || !quantity) {
+        if (!name || !price || !quantity)
             return RESPONSE.error(res, 3001, 400);
-        }
 
         // Create a new product in the database
         const newProduct = await Products.create({
@@ -44,22 +49,28 @@ export const addProduct = async (req, res) => {
 
 // Controller function to update an existing product
 export const updateProduct = async (req, res) => {
-    try {
-        const {
-            tokenData: { userId },
-            params: { productId },
-            body: { name, description, price, quantity },
-        } = req;
+    const {
+        tokenData: { userId },
+        params: { productId },
+        body: { name, description, price, quantity },
+    } = req;
 
-        // Validate request data
-        if (await isValidData({ ...req.params, ...req.body, ...req.tokenData }, res, {
-            userId: 'required|integer|min:1',
-            productId: 'required|integer|min:1',
-            name: 'required|string|min:2|max:255',
-            description: 'required|string|min:5|max:1000',
-            price: 'required|numeric|min:0',
-            quantity: 'required|integer|min:1',
-        })) return;
+
+    let validation = new Validator({ ...req.tokenData, ...req.body, ...req.params }, {
+        userId: 'required|integer|min:1',
+        productId: 'required|integer|min:1',
+        name: 'required|string|min:2|max:255',
+        description: 'required|string|min:5|max:1000',
+        price: 'required|numeric|min:0',
+        quantity: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
+    try {
 
         // Validate required fields
         if (!name || !price || !quantity) {
@@ -85,18 +96,24 @@ export const updateProduct = async (req, res) => {
 
 // Controller function to delete a product
 export const deleteProduct = async (req, res) => {
+    const {
+        params: { productId },
+        tokenData: { userId }
+    } = req;
+
+    // Validate request data
+
+    let validation = new Validator({ ...req.tokenData, ...req.params }, {
+        userId: 'required|integer|min:1',
+        productId: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
     try {
-        const {
-            params: { productId },
-            tokenData: { userId }
-        } = req;
-
-        // Validate request data
-        if (await isValidData({ ...req.tokenData, ...req.params }, res, {
-            userId: 'required|integer|min:1',
-            productId: 'required|integer|min:1',
-        })) return;
-
         // Delete the product from the database
         const deletedRowCount = await Products.destroy({ where: { id: productId, userId: userId } });
 
@@ -112,16 +129,21 @@ export const deleteProduct = async (req, res) => {
 
 // Controller function to get all products
 export const getAllProducts = async (req, res) => {
-    try {
-        const { query: { name, orderBy } } = req;
+    const { query: { name, orderBy } } = req;
 
-        // Validate request data
-        if (await isValidData(req.params, res, {
-            name: 'string',
-            orderBy: 'string',
-            page: 'integer|min:1',
-            limit: 'integer|min:1',
-        })) return;
+    let validation = new Validator(req.params, {
+        name: 'string',
+        orderBy: 'string',
+        page: 'integer|min:1',
+        limit: 'integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
+    try {
 
         const { page, limit, offset } = getPaginationMetadata(req.query);
 
@@ -143,13 +165,18 @@ export const getAllProducts = async (req, res) => {
 
 // Controller function to get a single product by ID
 export const getSingleProduct = async (req, res) => {
-    try {
-        const { params: { productId } } = req;
+    const { params: { productId } } = req;
 
-        // Validate request data
-        if (await isValidData(req.params, res, {
-            productId: 'required|integer|min:1',
-        })) return;
+    let validation = new Validator(req.params, {
+        productId: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
+    try {
 
         // Find a single product by its ID
         const product = await Products.findOne(

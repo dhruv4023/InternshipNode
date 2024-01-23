@@ -1,6 +1,8 @@
+import Validator from 'validatorjs';
+
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.js';
-import isValidData from '../helper/bodyValidation.js';
+
 const { Carts, CartItems, Products, Users, sequelize } = db;
 
 // Create a new cart
@@ -10,11 +12,16 @@ export const createCart = async (req, res) => {
         tokenData: { userId }
     } = req;
 
-    if (await isValidData({ ...req.body, ...req.tokenData }, res, {
+    let validation = new Validator({ ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
         productId: 'required|integer|min:1',
-        quantity: 'required|integer|min:1',
-    })) return;
+        quantity: 'required|integer|min:1'
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
 
     try {
         const newCart = await Carts.create({
@@ -31,7 +38,6 @@ export const createCart = async (req, res) => {
 
         RESPONSE.success(res, 2001, { cart: newCart }, 201);
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error)
     }
 };
@@ -45,12 +51,17 @@ export const addItemsToCart = async (req, res) => {
         body: { productId, quantity }
     } = req
 
-    if (await isValidData({ ...req.params, ...req.body, ...req.tokenData }, res, {
+    let validation = new Validator({ ...req.params, ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
         cartId: 'required|integer|min:1',
         productId: 'required|integer|min:1',
         quantity: 'required|integer|min:1',
-    })) return;
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
 
     try {
         // Check if the cart exists
@@ -73,28 +84,29 @@ export const addItemsToCart = async (req, res) => {
 
         RESPONSE.success(res, 2002, { cartItem }, 201);
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error)
     }
 };
 
 // Remove items from a cart
 export const removeItemFromCart = async (req, res) => {
-    const t = await sequelize.transaction(); // Start a transaction
+    const {
+        tokenData: { userId },
+        params: { cartItemId },
+    } = req;
+
+    let validation = new Validator({ ...req.params, ...req.tokenData }, {
+        userId: 'required|integer|min:1',
+        cartItemId: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
 
     try {
-        const {
-            tokenData: { userId },
-            params: { cartItemId },
-        } = req;
-
-        if (await isValidData({ ...req.params, ...req.tokenData }, res, {
-            userId: 'required|integer|min:1',
-            cartItemId: 'required|integer|min:1',
-        })) {
-            await t.rollback(); // Rollback the transaction on validation failure
-            return;
-        }
+        const t = await sequelize.transaction(); // Start a transaction
 
         const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
 
@@ -126,19 +138,24 @@ export const removeItemFromCart = async (req, res) => {
         await t.commit(); // Commit the transaction
         RESPONSE.success(res, 2006);
     } catch (error) {
-        console.error(error);
         await t.rollback(); // Rollback the transaction on error
         RESPONSE.error(res, 9999, 500, error);
     }
 };
 
 export const getAllCarts = async (req, res) => {
-    try {
-        const { tokenData: { userId } } = req;
+    const { tokenData: { userId } } = req;
 
-        if (await isValidData(req.tokenData, res, {
-            userId: 'required|integer|min:1',
-        })) return;
+    let validation = new Validator(req.tokenData, {
+        userId: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
+    try {
 
         const userCarts = await Carts.findAll({
             where: {
@@ -163,8 +180,6 @@ export const getAllCarts = async (req, res) => {
 
         RESPONSE.success(res, 2008, userCarts);
     } catch (error) {
-        // Handle errors
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error)
     }
 };

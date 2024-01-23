@@ -1,27 +1,28 @@
-import { getHistoryByUserId } from '../services/orderhistory.service.js';
-import { getUserIdsByName } from '../services/user.service.js';
-
+import Validator from 'validatorjs';
 
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.js';
-import isValidData from '../helper/bodyValidation.js';
 
-const { PurchasedItems, Orders, sequelize, CartItems, Carts, Products } = db;
+const { PurchasedItems, Orders, sequelize, CartItems, Carts, Products, Users } = db;
 
 export const orderProduct = async (req, res) => {
+    const {
+        body: { productId, quantity },
+        tokenData: { userId }
+    } = req;
+
+    let validation = new Validator({ ...req.body, ...req.tokenData }, {
+        userId: 'required|integer|min:1',
+        productId: 'required|integer|min:1',
+        quantity: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
     try {
-        const {
-            body: { productId, quantity },
-            tokenData: { userId }
-        } = req;
-
-        // Validate request data
-        if (await isValidData({ ...req.body, ...req.tokenData }, res, {
-            userId: 'required|integer|min:1',
-            productId: 'required|integer|min:1',
-            quantity: 'required|integer|min:1',
-        })) return;
-
         await sequelize.transaction(async (t) => {
             // Check if the product exists
             const product = await Products.findOne({ where: { id: productId }, transaction: t });
@@ -48,22 +49,25 @@ export const orderProduct = async (req, res) => {
             RESPONSE.success(res, 4004, { order, purchasedItem }, 201);
         });
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500, error);
     }
 };
 
 
 export const purchaseItemUsingCart = async (req, res) => {
+    const { body: { cartId }, tokenData: { userId } } = req;
+
+    let validation = new Validator({ ...req.body, ...req.tokenData }, {
+        userId: 'required|integer|min:1',
+        cartId: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
     try {
-        const { body: { cartId }, tokenData: { userId } } = req;
-
-        // Validate request data
-        if (await isValidData({ ...req.body, ...req.tokenData }, res, {
-            userId: 'required|integer|min:1',
-            cartId: 'required|integer|min:1',
-        })) return;
-
         // Check if the specified cart exists for the user
         const cart = await Carts.findOne({ where: { id: cartId, userId } });
         if (!cart) {
@@ -74,15 +78,15 @@ export const purchaseItemUsingCart = async (req, res) => {
         try {
             // Start an unmanaged transaction
             const t = await sequelize.transaction();
-            
+
             const cartItems = await CartItems.findAll({ where: { cartId } });
-            
+
             if (!cartItems || cartItems.length === 0) {
                 await t.rollback(); // Rollback the transaction
                 return RESPONSE.error(res, 4001, 404);
             }
             const order = await Orders.create({ userId }, { transaction: t });
-            
+
             // Create purchased items from the cart items
             const purchasedItems = await PurchasedItems.bulkCreate(
                 cartItems.map((cartItem) => ({
@@ -112,13 +116,18 @@ export const purchaseItemUsingCart = async (req, res) => {
 
 // Get purchase history for a user
 export const getPurchaseHistory = async (req, res) => {
+    const { tokenData: { userId } } = req;
+
+    let validation = new Validator(req.tokenData, {
+        userId: 'required|integer|min:1',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
     try {
-        const { tokenData: { userId } } = req;
-
-        if (await isValidData(req.tokenData, res, {
-            userId: 'required|integer|min:1',
-        })) return;
-
         const history = await getHistoryByUserId(userId);
 
         RESPONSE.success(res, 4003, { history });
@@ -129,11 +138,18 @@ export const getPurchaseHistory = async (req, res) => {
 
 // Get order list by customer name
 export const getOrderListByCustomerName = async (req, res) => {
+
+    let validation = new Validator(req.body, {
+        firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
+        lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
     try {
-        if (await isValidData(req.body, res, {
-            firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
-            lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
-        })) return;
 
         const allHistory = [];
         const userIds = await getUserIdsByName(req.body);
@@ -147,3 +163,59 @@ export const getOrderListByCustomerName = async (req, res) => {
         RESPONSE.error(res, 9999, 500, error)
     }
 };
+
+
+const getHistoryByUserId = async (userId) => {
+    // Find all orders and associated purchased items for the user
+    const orderIds = await Orders.findAll({
+        where: { userId },
+    });
+
+    const history = [];
+
+    for (const order of orderIds) {
+        const purchaseHistory = await PurchasedItems.findAll({ where: { orderId: order.id } });
+
+        for (const ph of purchaseHistory) {
+            const p = await Products.findOne({ where: { id: ph.productId } });
+
+            const dt = {
+                userId: userId,
+                orderId: ph.orderId,
+                quantity: ph.quantity,
+                productName: p.name,
+                productPrice: p.price,
+                productDescription: p.description,
+            };
+
+            history.push(dt);
+        }
+    }
+    return history
+}
+
+const getUserIdsByName = async ({ firstName, lastName }) => {
+    const users = await Users.findAll({
+        where: {
+            [Op.or]: [
+                {
+                    firstName: { [Op.iLike]: `%${firstName || ''}%` },
+                    lastName: { [Op.iLike]: `%${lastName || ''}%` },
+                },
+                {
+                    [Op.and]: [
+                        { firstName: { [Op.iLike]: `%${firstName}%` } },
+                        { lastName: { [Op.eq]: null } },
+                    ],
+                },
+                {
+                    [Op.and]: [
+                        { firstName: { [Op.eq]: null } },
+                        { lastName: { [Op.iLike]: `%${lastName}%` } },
+                    ],
+                },
+            ],
+        },
+    });
+    return users.map(u => u.id);
+}
