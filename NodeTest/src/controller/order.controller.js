@@ -88,10 +88,8 @@ export const purchaseItemUsingCart = async (req, res) => {
 
             const cartItems = await CartItems.findAll({ where: { cartId } });
 
-            if (!cartItems || cartItems.length === 0) {
-                await t.rollback(); // Rollback the transaction
+            if (!cartItems || cartItems.length === 0) 
                 return RESPONSE.error(res, 4001, 404);
-            }
 
             const order = await Orders.create({ userId }, { transaction: t });
 

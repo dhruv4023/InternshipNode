@@ -110,18 +110,14 @@ export const removeItemFromCart = async (req, res) => {
 
         const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
 
-        if (!cartItem) {
-            await t.rollback(); // Rollback the transaction if cart item not found
+        if (!cartItem) 
             return RESPONSE.error(res, 2004, 404);
-        }
 
         // Get the associated cart
         const cart = await Carts.findOne({ where: { id: cartItem.cartId }, transaction: t });
 
-        if (cart.userId !== userId) {
-            await t.rollback(); // Rollback the transaction if user doesn't own the cart
+        if (cart.userId !== userId) 
             return RESPONSE.error(res, 2007, 403);
-        }
 
         // Delete the cart item
         await cartItem.destroy({ transaction: t });
