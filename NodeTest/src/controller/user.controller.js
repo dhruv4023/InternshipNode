@@ -6,13 +6,25 @@ import { namePattern } from '../helper/custom_validation_patterns/name_pattern.h
 
 const { Users, Roles } = db;
 
-// Controller function to get user information by UID (User ID or username)
+// Controller function to get user information by uid (User ID or username)
 export const getUsers = async (req, res) => {
+
+    uidPattern(); // add custom validation - uid 
+
+    let validation = new Validator(req.params, {
+        uid: 'required|isEmailOrUsername'
+    });
+
+    if (validation.fails()) {
+        const firstMessage = Object.keys(validation.errors.all())[0];
+        return RESPONSE.error(res, validation.errors.first(firstMessage));
+    }
+
     try {
-        const { params: { UID } } = req;
+        const { params: { uid } } = req;
 
         // Check if the user data is already cached
-        const query = isNaN(id) ? { [Op.or]: [{ email: UID }, { username: UID }] } : { id: UID };
+        const query = isNaN(id) ? { [Op.or]: [{ email: uid }, { username: uid }] } : { id: uid };
 
         const user = await Users.findOne({
             where: query,
@@ -29,10 +41,9 @@ export const getUsers = async (req, res) => {
 
 // Controller function to update user data
 export const updateUserData = async (req, res) => {
-    const { tokenData: { userId }, body: { firstName, lastName, email } } = req; // Extract user data from the request body
-
 
     namePattern()
+
     let validation = new Validator({ ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
         firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
@@ -47,6 +58,8 @@ export const updateUserData = async (req, res) => {
     }
 
     try {
+        const { tokenData: { userId }, body: { email } } = req; // Extract user data from the request body
+
         const user = await Users.findOne({ where: { id: userId } }); // Find the user by their username
 
         // Check if the provided email is already used by another user
@@ -55,11 +68,8 @@ export const updateUserData = async (req, res) => {
             return RESPONSE.error(res, 1004, 400);
 
         // Update the user's data in the database
-        await Users.update({
-            firstName,
-            lastName,
-            email,
-        }, {
+        await Users.update(
+            req.body, {
             where: { id: userId },
         });
 

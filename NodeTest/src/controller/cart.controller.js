@@ -7,10 +7,6 @@ const { Carts, CartItems, Products, Users, sequelize } = db;
 
 // Create a new cart
 export const createCart = async (req, res) => {
-    const {
-        body: { productId, quantity },
-        tokenData: { userId }
-    } = req;
 
     let validation = new Validator({ ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
@@ -24,12 +20,13 @@ export const createCart = async (req, res) => {
     }
 
     try {
+        const {
+            tokenData: { userId }
+        } = req;
+
         const newCart = await Carts.create({
             userId,
-            cart_items: [{
-                productId,
-                quantity,
-            }],
+            cart_items: [req.body],
         }, {
             include: [{ model: CartItems }],
         });
@@ -42,12 +39,6 @@ export const createCart = async (req, res) => {
 
 // Add items to a cart
 export const addItemsToCart = async (req, res) => {
-
-    const {
-        tokenData: { userId },
-        params: { cartId },
-        body: { productId, quantity }
-    } = req
 
     let validation = new Validator({ ...req.params, ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
@@ -62,6 +53,11 @@ export const addItemsToCart = async (req, res) => {
     }
 
     try {
+        const {
+            tokenData: { userId },
+            params: { cartId },
+            body: { productId, quantity }
+        } = req
         // Check if the cart exists
         const cart = await Carts.findOne({ where: { id: cartId } });
 
@@ -88,22 +84,23 @@ export const addItemsToCart = async (req, res) => {
 
 // Remove items from a cart
 export const removeItemFromCart = async (req, res) => {
-    const {
-        tokenData: { userId },
-        params: { cartItemId },
-    } = req;
-
+    
     let validation = new Validator({ ...req.params, ...req.tokenData }, {
         userId: 'required|integer|min:1',
         cartItemId: 'required|integer|min:1',
     });
-
+    
     if (validation.fails()) {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-
+    
     try {
+        const {
+            tokenData: { userId },
+            params: { cartItemId },
+        } = req;
+
         const t = await sequelize.transaction(); // Start a transaction
 
         const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
@@ -138,8 +135,7 @@ export const removeItemFromCart = async (req, res) => {
 };
 
 export const getAllCarts = async (req, res) => {
-    const { tokenData: { userId } } = req;
-
+    
     let validation = new Validator(req.tokenData, {
         userId: 'required|integer|min:1',
     });
@@ -148,8 +144,9 @@ export const getAllCarts = async (req, res) => {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-
+    
     try {
+        const { tokenData: { userId } } = req;
 
         const userCarts = await Carts.findAll({
             where: {

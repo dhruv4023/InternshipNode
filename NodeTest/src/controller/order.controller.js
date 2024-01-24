@@ -7,10 +7,6 @@ import { namePattern } from '../helper/custom_validation_patterns/name_pattern.h
 const { PurchasedItems, Orders, sequelize, CartItems, Carts, Products, Users } = db;
 
 export const orderProduct = async (req, res) => {
-    const {
-        body: { productId, quantity },
-        tokenData: { userId }
-    } = req;
 
     let validation = new Validator({ ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
@@ -24,6 +20,11 @@ export const orderProduct = async (req, res) => {
     }
 
     try {
+        const {
+            body: { productId, quantity },
+            tokenData: { userId }
+        } = req;
+
         // Begin the transaction
         const t = await sequelize.transaction();
 
@@ -64,8 +65,7 @@ export const orderProduct = async (req, res) => {
 
 
 export const purchaseItemUsingCart = async (req, res) => {
-    const { body: { cartId }, tokenData: { userId } } = req;
-
+    
     let validation = new Validator({ ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
         cartId: 'required|integer|min:1',
@@ -75,8 +75,10 @@ export const purchaseItemUsingCart = async (req, res) => {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-
+    
     try {
+        const { body: { cartId }, tokenData: { userId } } = req;
+
         // Check if the specified cart exists for the user
         const cart = await Carts.findOne({ where: { id: cartId, userId } });
         if (!cart)
@@ -123,8 +125,7 @@ export const purchaseItemUsingCart = async (req, res) => {
 
 // Get purchase history for a user
 export const getPurchaseHistory = async (req, res) => {
-    const { tokenData: { userId } } = req;
-
+    
     let validation = new Validator(req.tokenData, {
         userId: 'required|integer|min:1',
     });
@@ -133,8 +134,10 @@ export const getPurchaseHistory = async (req, res) => {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-
+    
     try {
+        const { tokenData: { userId } } = req;
+
         const history = await getHistoryByUserId(userId);
 
         RESPONSE.success(res, 4003, { history });
@@ -145,6 +148,7 @@ export const getPurchaseHistory = async (req, res) => {
 
 // Get order list by customer name
 export const getOrderListByCustomerName = async (req, res) => {
+  
     namePattern();
     let validation = new Validator(req.body, {
         firstName: 'required|string|min:2|max:20|nameWithoutNumbers',

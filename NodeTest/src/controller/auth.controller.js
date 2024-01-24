@@ -1,26 +1,22 @@
-import bcrypt from 'bcrypt';
 import { Op } from 'sequelize';
 import Validator from "validatorjs";
 
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.helper.js';
-import { hashValueGenerator } from '../helper/generate_hash_value.helper.js';
 import generateJWTToken from '../helper/generate_token.helper.js';
 import { uidPattern } from '../helper/custom_validation_patterns/uid_pattern.helper.js';
 import { passwordPattern } from '../helper/custom_validation_patterns/password_pattern.helper.js';
 import { namePattern } from '../helper/custom_validation_patterns/name_pattern.helper.js';
+import { comparePassword, hashPassword } from '../helper/bcrypt_password.helper.js';
 
 const { Users, Roles } = db;
 
 // Controller for user registration
 export const registerControl = async (req, res) => {
-  // Extracting user registration data from the request body
-  const {
-    body: { firstName, lastName, username, email, password },
-  } = req;
 
   namePattern(); // add custom validation - name 
   passwordPattern(); // add custom validation - password
+
   let validation = new Validator(req.body, {
     firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
     lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
@@ -35,6 +31,10 @@ export const registerControl = async (req, res) => {
   }
 
   try {
+    // Extracting user registration data from the request body
+    const {
+      body: { firstName, lastName, username, email, password },
+    } = req;
 
     // Check if a user with the same email already exists
     const user = await Users.findOne({ where: { email } });
@@ -44,16 +44,13 @@ export const registerControl = async (req, res) => {
       return RESPONSE.error(res, 1003, 400);
     }
 
-    // Generate a salt and hash the user's password
-    const passwordHash = await hashValueGenerator(password);
-
     // Create a new User document in the database
     const newUser = await Users.create({
       firstName,
       lastName,
       username,
       email,
-      password: passwordHash,
+      password: hashPassword(password),
     });
 
     // Send a success response with the registered user's details
@@ -67,10 +64,9 @@ export const registerControl = async (req, res) => {
 
 // Controller for user login
 export const loginControl = async (req, res) => {
+
   uidPattern(); // add custom validation - uid 
   passwordPattern(); // add custom validation - password
-  // Extracting user login data from the request body
-  const { body: { uid, password } } = req;
 
   let validation = new Validator(req.body, {
     uid: 'required|isEmailOrUsername',
@@ -83,6 +79,8 @@ export const loginControl = async (req, res) => {
   }
 
   try {
+    // Extracting user login data from the request body
+    const { body: { uid, password } } = req;
 
     // Retrieve user data for the provided username or email
     const user = await Users.findOne({
@@ -95,11 +93,8 @@ export const loginControl = async (req, res) => {
     if (!user)
       return RESPONSE.error(res, 1027, 400);
 
-    // Compare the provided password with the hashed password in the database
-    const isMatch = await bcrypt.compare(password, user.password);
-
     // If passwords don't match, return a 400 Bad Request response
-    if (!isMatch)
+    if (!comparePassword(password, user.password))
       return RESPONSE.error(res, 1005, 400);
 
     // Generate a JWT token for the authenticated user
