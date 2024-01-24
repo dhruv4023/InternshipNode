@@ -84,7 +84,6 @@ export const loginControl = async (req, res) => {
 
   try {
 
-
     // Retrieve user data for the provided username or email
     const user = await Users.findOne({
       where: isNaN(uid) ? { [Op.or]: [{ email: uid }, { username: uid }] } : { id: uid },

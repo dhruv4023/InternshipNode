@@ -26,12 +26,10 @@ export const createCart = async (req, res) => {
     try {
         const newCart = await Carts.create({
             userId,
-            cart_items: [
-                {
-                    productId,
-                    quantity,
-                },
-            ],
+            cart_items: [{
+                productId,
+                quantity,
+            }],
         }, {
             include: [{ model: CartItems }],
         });
@@ -110,13 +108,13 @@ export const removeItemFromCart = async (req, res) => {
 
         const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
 
-        if (!cartItem) 
+        if (!cartItem)
             return RESPONSE.error(res, 2004, 404);
 
         // Get the associated cart
         const cart = await Carts.findOne({ where: { id: cartItem.cartId }, transaction: t });
 
-        if (cart.userId !== userId) 
+        if (cart.userId !== userId)
             return RESPONSE.error(res, 2007, 403);
 
         // Delete the cart item

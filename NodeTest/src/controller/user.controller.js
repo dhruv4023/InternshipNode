@@ -2,6 +2,7 @@ import { Op } from 'sequelize';
 
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.helper.js';
+import { namePattern } from '../helper/custom_validation_patterns/name_pattern.helper.js';
 
 const { Users, Roles } = db;
 
@@ -30,8 +31,8 @@ export const getUsers = async (req, res) => {
 export const updateUserData = async (req, res) => {
     const { tokenData: { userId }, body: { firstName, lastName, email } } = req; // Extract user data from the request body
 
-    const user = await Users.findOne({ where: { id: userId } }); // Find the user by their username
 
+    namePattern()
     let validation = new Validator({ ...req.body, ...req.tokenData }, {
         userId: 'required|integer|min:1',
         firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
@@ -46,24 +47,21 @@ export const updateUserData = async (req, res) => {
     }
 
     try {
+        const user = await Users.findOne({ where: { id: userId } }); // Find the user by their username
 
         // Check if the provided email is already used by another user
         if (user.email !== email && (await Users.findOne({ where: { email } })))
             // Return a 400 (Bad Request) status with an error message if the email is already used
             return RESPONSE.error(res, 1004, 400);
 
-
         // Update the user's data in the database
-        await Users.update(
-            {
-                firstName,
-                lastName,
-                email,
-            },
-            {
-                where: { id: userId },
-            }
-        );
+        await Users.update({
+            firstName,
+            lastName,
+            email,
+        }, {
+            where: { id: userId },
+        });
 
         const updatedUser = await Users.findOne({ where: { id: userId } }); // Retrieve the updated user data
 

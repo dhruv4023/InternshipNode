@@ -2,6 +2,7 @@ import Validator from 'validatorjs';
 
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.helper.js';
+import { namePattern } from '../helper/custom_validation_patterns/name_pattern.helper.js';
 
 const { PurchasedItems, Orders, sequelize, CartItems, Carts, Products, Users } = db;
 
@@ -144,7 +145,7 @@ export const getPurchaseHistory = async (req, res) => {
 
 // Get order list by customer name
 export const getOrderListByCustomerName = async (req, res) => {
-
+    namePattern();
     let validation = new Validator(req.body, {
         firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
         lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
