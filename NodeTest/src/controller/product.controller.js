@@ -9,7 +9,7 @@ const { Products, Users } = db
 
 // Controller function to add a new product
 export const addProduct = async (req, res) => {
-    
+
     let validation = new Validator({ ...req.tokenData, ...req.body }, {
         name: 'required|string|min:2|max:255',
         description: 'required|string|min:5|max:1000',
@@ -22,7 +22,7 @@ export const addProduct = async (req, res) => {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-    
+
     try {
         const {
             body: { name, description, price, quantity },
@@ -79,7 +79,7 @@ export const updateProduct = async (req, res) => {
         // Update the product in the database
         const [updatedRowsCount] = await Products.update(
             req.body,
-            { where: { id: productId, userId: userId } }
+            { where: { id: productId, userId } }
         );
 
         if (updatedRowsCount === 0)
@@ -113,7 +113,7 @@ export const deleteProduct = async (req, res) => {
         } = req;
 
         // Delete the product from the database
-        const deletedRowCount = await Products.destroy({ where: { id: productId, userId: userId } });
+        const deletedRowCount = await Products.destroy({ where: { id: productId, userId } });
 
         if (deletedRowCount === 0)
             return RESPONSE.error(res, 3003, 404);

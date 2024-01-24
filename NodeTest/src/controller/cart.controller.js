@@ -84,17 +84,17 @@ export const addItemsToCart = async (req, res) => {
 
 // Remove items from a cart
 export const removeItemFromCart = async (req, res) => {
-    
+
     let validation = new Validator({ ...req.params, ...req.tokenData }, {
         userId: 'required|integer|min:1',
         cartItemId: 'required|integer|min:1',
     });
-    
+
     if (validation.fails()) {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-    
+
     try {
         const {
             tokenData: { userId },
@@ -103,39 +103,44 @@ export const removeItemFromCart = async (req, res) => {
 
         const t = await sequelize.transaction(); // Start a transaction
 
-        const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
+        try {
 
-        if (!cartItem)
-            return RESPONSE.error(res, 2004, 404);
+            const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
 
-        // Get the associated cart
-        const cart = await Carts.findOne({ where: { id: cartItem.cartId }, transaction: t });
+            if (!cartItem)
+                return RESPONSE.error(res, 2004, 404);
 
-        if (cart.userId !== userId)
-            return RESPONSE.error(res, 2007, 403);
+            // Get the associated cart
+            const cart = await Carts.findOne({ where: { id: cartItem.cartId }, transaction: t });
 
-        // Delete the cart item
-        await cartItem.destroy({ transaction: t });
+            if (cart.userId !== userId)
+                return RESPONSE.error(res, 2007, 403);
 
-        // Check if the cart is empty after removing the item
-        const remainingItems = await CartItems.count({ where: { cartId: cart.id }, transaction: t });
-        if (remainingItems === 0) {
-            // If no items are left, delete the entire cart
-            await cart.destroy({ transaction: t });
+            // Delete the cart item
+            await cartItem.destroy({ transaction: t });
+
+            // Check if the cart is empty after removing the item
+            const remainingItems = await CartItems.count({ where: { cartId: cart.id }, transaction: t });
+            if (remainingItems === 0) {
+                // If no items are left, delete the entire cart
+                await cart.destroy({ transaction: t });
+                await t.commit(); // Commit the transaction
+                return RESPONSE.success(res, 2005);
+            }
+
             await t.commit(); // Commit the transaction
-            return RESPONSE.success(res, 2005);
+            RESPONSE.success(res, 2006);
+        } catch (error) {
+            await t.rollback(); // Rollback the transaction on error
+            RESPONSE.error(res, 9999, 500, error);
         }
-
-        await t.commit(); // Commit the transaction
-        RESPONSE.success(res, 2006);
     } catch (error) {
-        await t.rollback(); // Rollback the transaction on error
         RESPONSE.error(res, 9999, 500, error);
     }
 };
 
 export const getAllCarts = async (req, res) => {
-    
+
     let validation = new Validator(req.tokenData, {
         userId: 'required|integer|min:1',
     });
@@ -144,14 +149,11 @@ export const getAllCarts = async (req, res) => {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return RESPONSE.error(res, validation.errors.first(firstMessage));
     }
-    
+
     try {
-        const { tokenData: { userId } } = req;
 
         const userCarts = await Carts.findAll({
-            where: {
-                userId: userId,
-            },
+            where: req.tokenData,
             include: [{
                 model: CartItems,
                 include: [{
