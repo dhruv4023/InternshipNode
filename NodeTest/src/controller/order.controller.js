@@ -31,12 +31,16 @@ export const orderProduct = async (req, res) => {
             // Check if the product exists
             const product = await Products.findOne({ where: { id: productId }, transaction: t });
 
-            if (!product)
-                return RESPONSE.error(res, 4003, 404);
+            if (!product) {
+                t.rollback();
+                return RESPONSE.error(res, 3009, 404);
+            }
 
             // Check if the product quantity is sufficient
-            if (product.quantity < quantity)
+            if (product.quantity < quantity) {
+                t.rollback();
                 return RESPONSE.error(res, 4006, 400);
+            }
 
             // Create an order for the user
             const order = await Orders.create(req.tokenData, { transaction: t });
@@ -78,20 +82,23 @@ export const purchaseItemUsingCart = async (req, res) => {
     try {
         const { body: { cartId }, tokenData: { userId } } = req;
 
-        // Check if the specified cart exists for the user
-        const cart = await Carts.findOne({ where: { id: cartId, userId } });
-        if (!cart)
-            return RESPONSE.error(res, 4005, 404);
 
         // Start an unmanaged transaction
         const t = await sequelize.transaction();
 
         try {
+            // Check if the specified cart exists for the user
+            if (!(await Carts.findOne({ where: { id: cartId, userId } }, { transaction: t }))) {
+                t.rollback();
+                return RESPONSE.error(res, 4005, 404);
+            }
 
-            const cartItems = await CartItems.findAll({ where: { cartId } });
+            const cartItems = await CartItems.findAll({ where: { cartId } }, { transaction: t });
 
-            if (!cartItems || cartItems.length === 0)
+            if (!cartItems || cartItems.length === 0) {
+                t.rollback();
                 return RESPONSE.error(res, 4001, 404);
+            }
 
             const order = await Orders.create({ userId }, { transaction: t });
 
@@ -149,6 +156,7 @@ export const getPurchaseHistory = async (req, res) => {
 export const getOrderListByCustomerName = async (req, res) => {
 
     namePattern();
+
     let validation = new Validator(req.body, {
         firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
         lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
@@ -175,6 +183,7 @@ export const getOrderListByCustomerName = async (req, res) => {
 
 
 const getHistoryByUserId = async (userId) => {
+
     // Find all orders and associated purchased items for the user
     const orderIds = await Orders.findAll({ where: { userId } });
 
@@ -198,7 +207,8 @@ const getHistoryByUserId = async (userId) => {
             history.push(dt);
         }
     }
-    return history
+
+    return history;
 }
 
 const getUserIdsByName = async ({ firstName, lastName }) => {
@@ -224,5 +234,6 @@ const getUserIdsByName = async ({ firstName, lastName }) => {
             ],
         },
     });
+
     return users.map(u => u.id);
 }

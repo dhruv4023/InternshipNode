@@ -27,6 +27,7 @@ const MESSAGES = {
     3006: 'Products retrieved successfully',
     3007: 'Product retrieved successfully',
     3008: "Unauthorised product update not allowed",
+    3009: "Product not found!",
 
     4001: 'Cart is empty.',
     4002: 'Items purchased successfully.',

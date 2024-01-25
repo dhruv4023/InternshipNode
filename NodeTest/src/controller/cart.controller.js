@@ -58,16 +58,18 @@ export const addItemsToCart = async (req, res) => {
             params: { cartId },
             body: { productId, quantity }
         } = req
+        // Check if the product exists
+        if (!(await Products.findOne({ where: { id: productId } })))
+            return RESPONSE.error(res, 3009, 404);
+
         // Check if the cart exists
         const cart = await Carts.findOne({ where: { id: cartId } });
 
-        if (!cart) {
+        if (!cart)
             return RESPONSE.error(res, 2003, 404);
-        }
 
-        if (cart.userId !== userId) {
+        if (cart.userId !== userId)
             return RESPONSE.error(res, 2007, 403);
-        }
 
         // Create a new cart item
         const cartItem = await CartItems.create({
@@ -104,25 +106,30 @@ export const removeItemFromCart = async (req, res) => {
         const t = await sequelize.transaction(); // Start a transaction
 
         try {
-
+            // Find the cart item within the transaction
             const cartItem = await CartItems.findOne({ where: { id: cartItemId }, transaction: t });
 
-            if (!cartItem)
+            if (!cartItem) {
+                await t.rollback();
                 return RESPONSE.error(res, 2004, 404);
+            }
 
-            // Get the associated cart
+            // Get the associated cart within the transaction
             const cart = await Carts.findOne({ where: { id: cartItem.cartId }, transaction: t });
 
-            if (cart.userId !== userId)
+            if (cart.userId !== userId) {
+                await t.rollback();
                 return RESPONSE.error(res, 2007, 403);
+            }
 
-            // Delete the cart item
+            // Delete the cart item within the transaction
             await cartItem.destroy({ transaction: t });
 
-            // Check if the cart is empty after removing the item
+            // Check if the cart is empty after removing the item within the transaction
             const remainingItems = await CartItems.count({ where: { cartId: cart.id }, transaction: t });
+
             if (remainingItems === 0) {
-                // If no items are left, delete the entire cart
+                // If no items are left, delete the entire cart within the transaction
                 await cart.destroy({ transaction: t });
                 await t.commit(); // Commit the transaction
                 return RESPONSE.success(res, 2005);
