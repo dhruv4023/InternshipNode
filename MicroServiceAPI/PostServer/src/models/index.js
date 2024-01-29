@@ -40,11 +40,13 @@ const sequelize = new Sequelize(
 })();
 
 import postModel from "./Post/post.model.js";
+import api_logsModel from "./middleware/api_logs.model.js";
 
 const db = {
     Sequelize: Sequelize,
     sequelize: sequelize,
     Posts: postModel(sequelize, Sequelize),
+    ApiLogs: api_logsModel(sequelize, Sequelize)
 }
 
 db.sequelize.sync();

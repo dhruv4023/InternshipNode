@@ -1,4 +1,4 @@
-import  db  from '../models/index.js';
+import db from '../models/index.js';
 
 // api logger middleware function
 const logger = async (req, res, next) => {
@@ -7,7 +7,7 @@ const logger = async (req, res, next) => {
         api_url: req.url,
     };
     try {
-        await db.api_logs.create(obj);
+        await db.ApiLogs.create(obj);
         next();
     } catch (error) {
         console.log(error);

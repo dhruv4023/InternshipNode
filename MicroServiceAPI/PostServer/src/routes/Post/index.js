@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 // importing base routes
-import postRoutes from './post.routes.js';
+import postRoutes from './posts.routes.js';
 
 // defining routes
 router.use('/post', postRoutes);

@@ -27,5 +27,5 @@ export default {
     app_project_path: process.env.APP_PROJECT_PATH || 'http://localhost:4040',
     node_env: process.env.NODE_ENV || 'development',
     origin_url_list: process.env.ORIGIN_URL_LIST || '[ "http://localhost:3000" ]',
-    jwt_secret: process.env.JWT_SECRECT,
+    jwt_secret: process.env.JWT_SECRET,
 };
