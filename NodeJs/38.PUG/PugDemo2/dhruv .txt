@@ -1,3 +1,0 @@
-the name of client :  dhruv  
-age : 15 
-email : d@m.c
