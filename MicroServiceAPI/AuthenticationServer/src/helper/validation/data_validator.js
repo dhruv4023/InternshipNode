@@ -1,21 +1,37 @@
 import Validator from 'validatorjs';
-import { namePattern } from './custom_validation_patterns/name_pattern.helper';
-import { passwordPattern } from './custom_validation_patterns/password_pattern.helper';
-import { uidPattern } from './custom_validation_patterns/uid_pattern.helper';
 
-namePattern(); // add custom validation - name 
-passwordPattern(); // add custom validation - password
-uidPattern()
+Validator.register(
+    'isEmailOrUsername',
+    (value) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || /^[a-zA-Z0-9_]{3,20}$/.test(value);
+    },
+    'The :attribute must be a valid email address or a username with 3-20 characters.'
+);
 
-const validateData = (data, rules, customMessages = {}) => {
-    const validation = new Validator(data, rules, customMessages);
+Validator.register(
+    'password',
+    (value) => {
+        return value.length >= 5;
+    },
+    'The :attribute must be at least 5 characters long.'
+);
 
+Validator.register(
+    'nameWithoutNumbers',
+    (value) => {
+        return value.match(
+            /^[a-zA-Z]+$/
+        );
+    },
+    'The :attribute field cannot contain numbers.'
+);
+
+const isValidData = async (dataToBeValidate, constraints) => {
+    let validation = new Validator(dataToBeValidate, constraints);
     if (validation.fails()) {
         const firstMessage = Object.keys(validation.errors.all())[0];
         return validation.errors.first(firstMessage);
     }
-
-    return null; // No validation errors
+    return false;
 };
-
-export default validateData
+export default isValidData;

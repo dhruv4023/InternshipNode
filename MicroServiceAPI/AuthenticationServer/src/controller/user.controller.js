@@ -8,18 +8,16 @@ const { Users } = db;
 // Controller function to get user information by uid (User ID or username)
 export const getUsers = async (req, res) => {
 
-    // let validation = new Validator(req.params, {
-    //     uid: 'required|isEmailOrUsername'
-    // });
+    const validationErr = await isValidData(req.body, {
+        uid: 'required|isEmailOrUsername',
+    })
 
-    // if (validation.fails()) {
-    //     const firstMessage = Object.keys(validation.errors.all())[0];
-    //     return RESPONSE.error(res, validation.errors.first(firstMessage));
-    // }
+    if (validationErr)
+        return RESPONSE.error(res, validationErr);
 
     try {
         const { params: { uid } } = req;
-        console.log((uid))
+
         const user = await Users.findOne(mongoose.isValidObjectId(uid)
             ? { _id: uid } : {
                 $or: [{ email: uid }, { username: uid }],
@@ -40,18 +38,19 @@ export const getUsers = async (req, res) => {
 // Controller function to update user data
 export const updateUserData = async (req, res) => {
 
-    // let validation = new Validator({ ...req.body, ...req.tokenData }, {
-    //     userId: 'required|integer|min:1',
-    //     firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
-    //     lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
-    //     username: 'required|string|min:3|max:20',
-    //     email: 'required|email',
-    // });
+    const validationErr = await isValidData(req.body, {
+        userId: 'required|integer|min:1',
+        firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
+        lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
+        username: 'required|string|min:3|max:20',
+        email: 'required|email',
+        uid: 'required|isEmailOrUsername',
+        password: 'required|password',
+    })
 
-    // if (validation.fails()) {
-    //     const firstMessage = Object.keys(validation.errors.all())[0];
-    //     return RESPONSE.error(res, validation.errors.first(firstMessage));
-    // }
+    if (validationErr)
+        return RESPONSE.error(res, validationErr);
+
     try {
         const _file = req.file; // Get the uploaded file, if any
         const {

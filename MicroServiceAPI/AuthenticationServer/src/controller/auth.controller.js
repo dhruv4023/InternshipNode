@@ -4,18 +4,22 @@ import RESPONSE from '../helper/response.helper.js';
 import generateJWTToken from '../helper/generate_token.helper.js';
 import { comparePassword, hashPassword } from '../helper/bcrypt_password.helper.js';
 import { sendVerificationLink } from "../services/verificationlink.service.js";
+import validateData from "../helper/validation/data_validator.js";
+import isValidData from "../helper/validation/data_validator.js";
 const { Users } = db;
 
 // Controller for user registration
 export const registerControl = async (req, res) => {
 
-  // validateData(req.body, {
-  //   firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
-  //   lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
-  //   username: 'required|string',
-  //   email: 'required|email',
-  //   password: 'required|password',
-  // })
+  const validationErr = await isValidData(req.body, {
+    firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
+    lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
+    username: 'required|string',
+    email: 'required|email',
+    password: 'required|password',
+  })
+  if (validationErr)
+    return RESPONSE.error(res, validationErr);
 
   try {
     const _file = req.file; // Get the uploaded file, if any
@@ -70,15 +74,12 @@ export const registerControl = async (req, res) => {
 // Controller for user login
 export const loginControl = async (req, res) => {
 
-  // let validation = new Validator(req.body, {
-  //   uid: 'required|isEmailOrUsername',
-  //   password: 'required|password',
-  // });
-
-  // if (validation.fails()) {
-  //   const firstMessage = Object.keys(validation.errors.all())[0];
-  //   return RESPONSE.error(res, validation.errors.first(firstMessage));
-  // }
+  const validationErr = await isValidData(req.body, {
+    uid: 'required|isEmailOrUsername',
+    password: 'required|password',
+  })
+  if (validationErr)
+    return RESPONSE.error(res, validationErr);
 
   try {
     // Extracting user login data from the request body
@@ -134,6 +135,15 @@ export const getUserNames = async (req, res) => {
 
 // Controller function to change user password
 export const changePassControl = async (req, res) => {
+
+  const validationErr = await isValidData(req.body, {
+    email: 'required|email',
+    password: 'required|password',
+  })
+
+  if (validationErr)
+    return RESPONSE.error(res, validationErr);
+
   try {
     const { body: { email, password } } = req; // Extract email and new password from the request body
 
