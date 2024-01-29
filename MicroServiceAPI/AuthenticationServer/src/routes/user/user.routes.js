@@ -10,7 +10,7 @@ import upload from "../../middleware/fileUploder.js";
 const routes = express.Router();
 
 // Define a GET route to fetch user data by UID
-routes.get("/get/:UID", getUsers);
+routes.get("/get/:uid", getUsers);
 
 // Define a POST route to update user data by ID, with token verification and file upload
 routes.post(

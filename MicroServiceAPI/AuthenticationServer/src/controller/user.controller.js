@@ -1,5 +1,7 @@
+import mongoose from 'mongoose';
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.helper.js';
+import { uploadFile } from '../helper/uploadFileToCloudnary.js';
 
 const { Users } = db;
 
@@ -17,15 +19,18 @@ export const getUsers = async (req, res) => {
 
     try {
         const { params: { uid } } = req;
-
-        // Check if the user data is already cached
+        console.log((uid))
         const user = await Users.findOne(mongoose.isValidObjectId(uid)
             ? { _id: uid } : {
                 $or: [{ email: uid }, { username: uid }],
             }
         );
+        // If user doesn't exist, rollback the transaction and return a 400 Bad Request response
+        if (!user) {
+            return RESPONSE.error(res, 1027, 400);
+        }
 
-        RESPONSE.success(res, 1006, user);
+        RESPONSE.success(res, 1006, { user });
     } catch (error) {
         // Handle errors and return a 500 (Internal Server Error) status with an error message
         RESPONSE.error(res, 9999, 500, error)

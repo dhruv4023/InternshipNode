@@ -86,10 +86,10 @@ export const loginControl = async (req, res) => {
 
     try {
       // Retrieve user data for the provided username or email
-      const user = await Users.findOne(mongoose.isValidObjectId(id)
-        ? { _id: id }
+      const user = await Users.findOne(mongoose.isValidObjectId(uid)
+        ? { _id: uid }
         : {
-          $or: [{ email: id }, { username: id }],
+          $or: [{ email: uid }, { username: uid }],
         }
       );
 
@@ -132,22 +132,22 @@ export const getUserNames = async (req, res) => {
   }
 };
 
-// // Controller function to change user password
-// export const changePassControl = async (req, res) => {
-//   try {
-//     const { body: { email, password } } = req; // Extract email and new password from the request body
+// Controller function to change user password
+export const changePassControl = async (req, res) => {
+  try {
+    const { body: { email, password } } = req; // Extract email and new password from the request body
 
-//     const user = await Users.findOne({ email: email }); // Find the user by their email
+    const user = await Users.findOne({ email: email }); // Find the user by their email
 
-//     if (!user)
-//       return res.status(400).json({ exist: false, msg: "User doesn't exist!" }); // If the user doesn't exist, send a 400 (Bad Request) response
+    if (!user)
+      return RESPONSE.error(res, 1027, 400);
+    console.log(req.body)
+    await Users.findOneAndUpdate({ email }, {
+      $set: { password: hashPassword(password) },
+    }); // Update the user's password in the database
 
-//     await Users.findByIdAndUpdate(user._id, {
-//       $set: { password: hashPassword(password) },
-//     }); // Update the user's password in the database
-
-//     res.status(200).json({ msg: "Password changed successfully!" }); // Send a 200 (OK) response upon successful password change
-//   } catch (error) {
-//     res.status(500).json({ msg: "Failed to change password" }); // Send a 500 (Internal Server Error) response if there's an error
-//   }
-// };
+    RESPONSE.success(res, 1010);
+  } catch (error) {
+    RESPONSE.error(res, 9999, 500, error);
+  }
+};
