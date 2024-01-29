@@ -4,7 +4,6 @@ import RESPONSE from '../helper/response.helper.js';
 import generateJWTToken from '../helper/generate_token.helper.js';
 import { comparePassword, hashPassword } from '../helper/bcrypt_password.helper.js';
 import { sendVerificationLink } from "../services/verificationlink.service.js";
-import validateData from "../helper/validation/data_validator.js";
 import isValidData from "../helper/validation/data_validator.js";
 const { Users } = db;
 

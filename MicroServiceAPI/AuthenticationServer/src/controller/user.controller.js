@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import db from '../models/index.js';
 import RESPONSE from '../helper/response.helper.js';
 import { uploadFile } from '../helper/uploadFileToCloudnary.js';
+import isValidData from '../helper/validation/data_validator.js';
 
 const { Users } = db;
 
@@ -39,12 +40,10 @@ export const getUsers = async (req, res) => {
 export const updateUserData = async (req, res) => {
 
     const validationErr = await isValidData(req.body, {
-        userId: 'required|integer|min:1',
         firstName: 'required|string|min:2|max:20|nameWithoutNumbers',
         lastName: 'required|string|min:2|max:20|nameWithoutNumbers',
         username: 'required|string|min:3|max:20',
         email: 'required|email',
-        uid: 'required|isEmailOrUsername',
         password: 'required|password',
     })
 
@@ -81,7 +80,7 @@ export const updateUserData = async (req, res) => {
             });
             filePath = fileData.public_id;
         }
-
+        // console.log(filePath)
         // Update the user's data in the database
         await Users.findOneAndUpdate(
             { username: _id },
