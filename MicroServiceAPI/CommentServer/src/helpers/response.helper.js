@@ -1,4 +1,4 @@
-import getMessage from '../lang/en/messages.js';
+import getMessage from '../langs/en/messages.js';
 
 const RESPONSE = {};
 RESPONSE.success = function (res, messageCode = null, data = null, statusCode = 200) {

@@ -43,7 +43,6 @@ const userSchema = new mongoose.Schema(
       city: { type: String, require: true },
       pincode: { type: Number, require: true },
     },
-    impressions: { type: Number, default: 0 }, // Default impression count
     roles: {
       type: String,
       enum: ['admin', 'user'], // Only 'admin' or 'user' roles are allowed

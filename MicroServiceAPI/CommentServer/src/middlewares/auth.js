@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import RESPONSE from "../helper/response.helper.js";
+import RESPONSE from "../helpers/response.helper.js";
 import config from "../config/config.js";
 
 // Middleware to verify user token

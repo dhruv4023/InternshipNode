@@ -7,8 +7,8 @@ import {
   createPost,
   updatePost,
   deletePost,
-} from '../../controller/post.controller.js';
-import { verifyToken } from '../../middleware/auth.js';
+} from '../../controllers/post.controller.js';
+import { verifyToken } from '../../middlewares/auth.js';
 
 const router = express.Router();
 

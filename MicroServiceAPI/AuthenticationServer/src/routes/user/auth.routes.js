@@ -5,9 +5,9 @@ import {
   loginControl,
   getUserNames,
   changePassControl,
-} from "../../controller/auth.controller.js";
-import { verifyToken } from "../../middleware/auth.js";
-import upload from "../../middleware/fileUploder.js";
+} from "../../controllers/auth.controller.js";
+import { verifyToken } from "../../middlewares/auth.js";
+import upload from "../../middlewares/file_uploder.js";
 
 // Create a new Express Router
 const routes = express.Router();
@@ -19,7 +19,7 @@ routes.post("/register", upload.single("picPath"), registerControl);
 routes.post("/login", loginControl);
 
 // Define a POST route for changing user passwords
-routes.post("/change/password", verifyToken, changePassControl);
+routes.put("/change/password", verifyToken, changePassControl);
 
 // Define a GET route to fetch user usernames
 routes.get("/get/usernames", getUserNames);

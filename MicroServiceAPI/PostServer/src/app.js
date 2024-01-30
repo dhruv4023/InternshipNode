@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 });
 
 // Import logger middleware
-import { logger } from "./middleware/logger.js";
+import { logger } from "./middlewares/logger.js";
 
 // Use logger middleware only in development environment
 if (config.node_env == 'development') {

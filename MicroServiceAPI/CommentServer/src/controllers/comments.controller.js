@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-import RESPONSE from "../helper/response.helper.js";
+import RESPONSE from "../helpers/response.helper.js";
 
 const { Comments } = db
 

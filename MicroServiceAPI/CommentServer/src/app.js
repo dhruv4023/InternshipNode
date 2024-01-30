@@ -2,7 +2,6 @@
 import express from "express";
 import cors from "cors";
 import config from './config/config.js';
-// import bodyParser from "body-parser";
 
 // Create an Express application
 const app = express();

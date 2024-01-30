@@ -2,9 +2,9 @@ import express from "express";
 
 import {
   getUsers, updateUserData,
-} from "../../controller/user.controller.js";
-import { verifyToken } from "../../middleware/auth.js";
-import upload from "../../middleware/fileUploder.js";
+} from "../../controllers/user.controller.js";
+import { verifyToken } from "../../middlewares/auth.js";
+import upload from "../../middlewares/file_uploder.js";
 
 // Create a new Express Router
 const routes = express.Router();
@@ -14,7 +14,7 @@ routes.get("/get/:uid", getUsers);
 
 // Define a POST route to update user data by ID, with token verification and file upload
 routes.post(
-  "/update/:id",
+  "/update/",
   verifyToken, // Middleware to verify JWT token
   upload.single("picPath"), // Middleware for uploading a single file
   updateUserData

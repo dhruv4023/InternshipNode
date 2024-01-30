@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import "./cloudnary/cloudnaryConfig.js"
+import "./cloudnary/cloudnary_config.js"
 import config from './config/config.js';
 
 const app = express();
