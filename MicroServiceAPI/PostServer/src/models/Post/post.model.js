@@ -11,12 +11,8 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    img: {
-      type: DataTypes.STRING, // Assuming the image path or URL is a string
-      allowNull: true, // Adjust as needed
-    },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
   }, {

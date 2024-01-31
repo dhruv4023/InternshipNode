@@ -41,13 +41,18 @@ const sequelize = new Sequelize(
 
 import postModel from "./Post/post.model.js";
 import api_logsModel from "./middleware/api_logs.model.js";
+import imageModel from "./images/image.model.js";
 
 const db = {
     Sequelize: Sequelize,
     sequelize: sequelize,
+    ApiLogs: api_logsModel(sequelize, Sequelize),
     Posts: postModel(sequelize, Sequelize),
-    ApiLogs: api_logsModel(sequelize, Sequelize)
+    Images: imageModel(sequelize, Sequelize)
 }
+
+db.Posts.hasMany(db.Images, { as: 'images', foreignKey: 'postId' });
+db.Images.belongsTo(db.Posts, { foreignKey: 'postId' });
 
 db.sequelize.sync();
 

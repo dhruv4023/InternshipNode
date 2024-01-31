@@ -1,8 +1,8 @@
 import axios from 'axios';
 import FormData from 'form-data';
 
-import config from '../../config/config.js';
 import RESPONSE from '../../helpers/response.helper.js';
+import config from '../../config/config.js';
 
 const AUTH_API_END = config.micro_services.auth_api_end;
 
@@ -80,7 +80,7 @@ export const changePassControl = async (req, res) => {
             url: `${AUTH_API_END}/api/v1/auth/change/password`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': req.headers.authorization
+                'Authorization': req.header("Authorization")
             },
             data: JSON.stringify(req.body)
         });

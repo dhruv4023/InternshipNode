@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import db from '../models/index.js';
 import RESPONSE from '../helpers/response.helper.js';
-import { uploadFile } from '../helpers/upload_file_to_cloudnary.helper.js';
+import { uploadFile } from '../helpers/upload_file_to_cloudinary.helper.js';
 import isValidData from '../helpers/validation/data_validator.js';
 
 const { Users } = db;
@@ -73,7 +73,7 @@ export const updateUserData = async (req, res) => {
             return res.status(400).json({ msg: "Email already used!" });
         }
 
-        // upload image to cloudnary
+        // upload image to cloudinary
         let filePath = user?.picPath;
         if (_file) {
             const fileData = await uploadFile({

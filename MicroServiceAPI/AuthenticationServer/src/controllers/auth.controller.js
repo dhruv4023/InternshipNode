@@ -5,7 +5,7 @@ import generateJWTToken from '../helpers/generate_token.helper.js';
 import { comparePassword, hashPassword } from '../helpers/bcrypt_password.helper.js';
 import isValidData from "../helpers/validation/data_validator.js";
 import { sendVerificationLink } from "../services/verification_link.service.js";
-import { uploadFile } from "../helpers/upload_file_to_cloudnary.helper.js";
+import { uploadFile } from "../helpers/upload_file_to_cloudinary.helper.js";
 const { Users } = db;
 
 // Controller for user registration

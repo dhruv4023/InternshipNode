@@ -1,17 +1,55 @@
 import db from "../models/index.js"
 import RESPONSE from "../helpers/response.helper.js";
 import isValidData from "../helpers/validation/data_validator.js";
+import { deleteImages, uploadFile } from "../helpers/cloudinary.helper.js";
+import { getPaginatedResponse, getPaginationMetadata } from "../helpers/pagination.helper.js";
 
-const { Posts } = db;
+const { Posts, sequelize, Images } = db;
+
 export const getPosts = async (req, res) => {
     try {
-        // Assuming you are using Sequelize to fetch posts from the database
-        const posts = await Posts.findAll();
+        // Extract pagination parameters from the query string
+        const { page, limit, offset } = getPaginationMetadata(req.query);
 
-        // Send a success response with the retrieved posts
-        RESPONSE.success(res, 1008, posts);
-    } catch (error) { 
-        console.log(error)
+        // Assuming you are using Sequelize to fetch paginated posts from the database
+        const data = await Posts.findAndCountAll({
+            include: [{ model: Images, as: 'images' }],
+            limit,
+            offset,
+        });
+
+        // Construct a paginated response
+        const paginatedResponse = getPaginatedResponse(data, page, limit);
+
+        // Send a success response with the paginated posts
+        RESPONSE.success(res, 3005, paginatedResponse);
+    } catch (error) {
+        console.error(error);
+        // If an error occurs during post retrieval, log the error and send a 500 Internal Server Error response
+        RESPONSE.error(res, 9999, 500);
+    }
+};
+
+export const getPostsByUserId = async (req, res) => {
+    try {
+        // Extract pagination parameters from the query string
+        const { params: { userId } } = req;
+        const { page, limit, offset } = getPaginationMetadata(req.query);
+        // Assuming you are using Sequelize to fetch paginated posts from the database
+        const data = await Posts.findAndCountAll({
+            where: { userId },
+            include: [{ model: Images, as: 'images' }],
+            limit,
+            offset,
+        });
+
+        // Construct a paginated response
+        const paginatedResponse = getPaginatedResponse(data, page, limit);
+
+        // Send a success response with the paginated posts
+        RESPONSE.success(res, 3005, paginatedResponse);
+    } catch (error) {
+        console.error(error);
         // If an error occurs during post retrieval, log the error and send a 500 Internal Server Error response
         RESPONSE.error(res, 9999, 500);
     }
@@ -21,102 +59,172 @@ export const getPostById = async (req, res) => {
     const { params: { postId } } = req;
 
     try {
-        const post = await Posts.findByPk(postId);
-
-        if (post) {
-            RESPONSE.success(res, 3007, post);
-        } else {
-            RESPONSE.error(res, 3003, 404, 'Post not found');
-        }
+        const post = await Posts.findOne({
+            where: { id: postId },
+            include: [{ model: Images, as: 'images' }],
+        });
+        (post) ? RESPONSE.success(res, 3006, post) : RESPONSE.error(res, 3003, 404);
     } catch (error) {
-        console.error(error);
         RESPONSE.error(res, 9999, 500);
     }
 };
 
 export const createPost = async (req, res) => {
-    const { body: { title, content, img }, tokenData: { userId } } = req;
-
-    const validationErr = await isValidData({ title, content, img, userId }, {
+    const validationErr = await isValidData(req.body, {
         title: 'required|string|min:2|max:255',
         content: 'required|string',
-        img: 'string', // Adjust the validation rule for img as needed
-        userId: 'required', // Assuming userId is an integer
     });
 
-    if (validationErr) {
+    if (validationErr)
         return RESPONSE.error(res, validationErr);
-    }
 
+    const t = await sequelize.transaction();
+
+    // console.log(req.files)
     try {
+        const { body: { title, content }, tokenData: { userId } } = req;
+
+
         const newPost = await Posts.create({
             title,
             content,
-            img,
             userId,
-        });
+        }, { transaction: t });
 
-        RESPONSE.success(res, 3002, newPost);
+        const imgUrls = await uploadImages(req.files, userId, t);
+        // Create associated images with the post
+        await Images.bulkCreate(
+            imgUrls.map(imageUrl => ({ imageUrl, postId: newPost.id })),
+            { transaction: t }
+        );
+
+        await t.commit();  // Commit the transaction
+
+        RESPONSE.success(res, 3001, newPost);
     } catch (error) {
         console.error(error);
+        await t.rollback();  // Rollback the transaction if an error occurs
         RESPONSE.error(res, 9999, 500);
+    }
+};
+
+export const uploadImages = async (files, userId, transaction) => {
+    const fileName = (new Date()).getTime();
+    const filePublicIds = [];
+    try {
+        for (let i in files) {
+            const fileData = await uploadFile({
+                file: files[i],
+                newImgFileName: String(fileName) + "_" + String(i),
+                dirAddress: `Users/${userId}/posts/images/`,
+            }, transaction);
+            filePublicIds.push(fileData.public_id);
+            console.log(fileData.public_id)
+            // fileName = 5;
+        }
+        return filePublicIds;
+    } catch (error) {
+        console.log(error)
+        await deleteImages(filePublicIds)
+        throw Error("Error occured while uploading image")
     }
 };
 
 export const updatePost = async (req, res) => {
-    const { body: { title, content, img, userId }, params: { postId } } = req;
+    const { body: { title, content, rmImgs }, params: { postId }, tokenData: { userId } } = req;
 
-    const validationErr = await isValidData({ title, content, img, userId }, {
+    const validationErr = await isValidData({ title, content }, {
         title: 'string|min:2|max:255',
         content: 'string',
-        img: 'string', // Adjust the validation rule for img as needed
-        userId: 'integer', // Assuming userId is an integer
     });
 
-    if (validationErr) {
+    if (validationErr)
         return RESPONSE.error(res, validationErr);
-    }
+
+    const transaction = await sequelize.transaction();
 
     try {
-        const [rowsUpdated, [updatedPost]] = await Posts.update(
+        const imgUrls = await uploadImages(req.files, userId, transaction);
+        // Create associated images with the post
+        await Images.bulkCreate(
+            imgUrls.map(imageUrl => ({ imageUrl, postId })),
+            { transaction }
+        );
+
+        const [rowsUpdated] = await Posts.update(
             {
                 title,
                 content,
-                img,
-                userId,
             },
             {
-                where: { id: postId },
-                returning: true,
+                where: { id: postId, userId },
+                transaction,
             }
         );
-
-        if (rowsUpdated > 0) {
-            RESPONSE.success(res, 3004, updatedPost);
-        } else {
-            RESPONSE.error(res, 3003, 404, 'Post not found');
+        if (rmImgs && typeof rmImgs === "object") {
+            // Delete images in a transaction
+            await deleteImages(rmImgs);
+            await Images.destroy({
+                where: {
+                    imageUrl: rmImgs,
+                },
+                transaction,
+            });
         }
+        if (rowsUpdated > 0) {
+            await transaction.commit();  // Commit the transaction
+            try {
+                const updatedPost = await Posts.findOne({
+                    where: { id: postId },
+                    include: [{ model: Images, as: 'images' }],
+                });
+                RESPONSE.success(res, 3002, updatedPost);
+            } catch (error) {
+                RESPONSE.success(res, 3002);
+            }
+        } else {
+            await transaction.rollback();  // Rollback the transaction if no rows were updated
+            RESPONSE.error(res, 3003, 404);
+        }
+
     } catch (error) {
+        await transaction.rollback();  // Rollback the transaction if an error occurs
         console.error(error);
         RESPONSE.error(res, 9999, 500);
     }
 };
 
+
 export const deletePost = async (req, res) => {
     const { params: { postId } } = req;
 
+    const transaction = await sequelize.transaction();
+
     try {
+        // Find images associated with the post
+        const images = await Images.findAll({
+            where: { postId },
+            transaction,
+        });
+
+        // Delete images on Cloudinary
+        await deleteImages(images.map(img => img.imageUrl), transaction);
+
+        // Delete the post
         const rowsDeleted = await Posts.destroy({
-            where: { id: postId },
+            where: { id: postId, userId: req.tokenData.userId },
+            transaction,
         });
 
         if (rowsDeleted > 0) {
-            RESPONSE.success(res, 3005, { postId });
+            await transaction.commit();  // Commit the transaction
+            RESPONSE.success(res, 3004, { postId });
         } else {
-            RESPONSE.error(res, 3003, 404, 'Post not found');
+            await transaction.rollback();  // Rollback the transaction if no rows were deleted
+            RESPONSE.error(res, 3003, 404);
         }
     } catch (error) {
-        console.error(error);
+        await transaction.rollback();  // Rollback the transaction if an error occurs
         RESPONSE.error(res, 9999, 500);
     }
 };

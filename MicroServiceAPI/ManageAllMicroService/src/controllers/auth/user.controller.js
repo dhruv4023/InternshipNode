@@ -36,10 +36,10 @@ export const updateUserData = async (req, res) => {
             });
         }
 
-        const response = await axios.post(`${AUTH_API_END}/api/v1/user/update/`, formData, {
+        const response = await axios.put(`${AUTH_API_END}/api/v1/user/update/`, formData, {
             headers: {
                 ...formData.getHeaders(),
-                'Authorization': req.headers.authorization
+                'Authorization': req.header("Authorization")
             },
         });
 

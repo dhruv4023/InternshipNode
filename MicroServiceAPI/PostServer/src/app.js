@@ -2,7 +2,7 @@
 import express from "express";
 import cors from "cors";
 import config from './config/config.js';
-// import bodyParser from "body-parser";
+import "./config/cloudinary.config.js"
 
 // Create an Express application
 const app = express();

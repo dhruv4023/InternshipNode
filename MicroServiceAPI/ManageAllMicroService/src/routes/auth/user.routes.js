@@ -14,7 +14,7 @@ const routes = express.Router();
 routes.get("/get/:uid", getUsers);
 
 // Define a POST route to update user data by ID, with token verification and file upload
-routes.post(
+routes.put(
   "/update/",
   verifyToken, // Middleware to verify JWT token
   upload.single("picPath"), // Middleware for uploading a single file
