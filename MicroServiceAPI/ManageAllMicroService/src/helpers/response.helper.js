@@ -1,4 +1,3 @@
-import getMessage from '../langs/en/messages.js';
 
 const RESPONSE = {};
 RESPONSE.success = function (res, response) {

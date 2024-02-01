@@ -49,6 +49,11 @@ const db = {
     ApiLogs: api_logsModel(sequelize, Sequelize)
 }
 
+db.Comments.hasMany(db.Comments, {
+    foreignKey: 'parentCommentId', as: 'replies',
+    onDelete: 'CASCADE'
+});
+
 db.sequelize.sync();
 
 export default db

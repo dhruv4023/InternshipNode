@@ -5,7 +5,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     postId: {
@@ -15,6 +15,11 @@ export default (sequelize, DataTypes) => {
     parentCommentId: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      references: {
+        model: 'comments',
+        key: 'id',
+        onDelete: 'CASCADE'
+      },
     },
   }, {
     timestamps: true,

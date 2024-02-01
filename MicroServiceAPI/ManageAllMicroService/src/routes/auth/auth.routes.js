@@ -8,7 +8,7 @@ import {
 } from "../../controllers/auth/auth.controller.js";
 import { verifyToken } from "../../middlewares/auth.js";
 import upload from "../../middlewares/file_uploder.js";
- 
+
 // Create a new Express Router
 const routes = express.Router();
 

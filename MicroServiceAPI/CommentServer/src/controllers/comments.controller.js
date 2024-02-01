@@ -1,30 +1,16 @@
 import db from "../models/index.js";
 import RESPONSE from "../helpers/response.helper.js";
+import { getPaginatedResponse, getPaginationMetadata } from "../../../PostServer/src/helpers/pagination.helper.js";
+import isValidData from "../../../PostServer/src/helpers/validation/data_validator.js";
+import { getRecursivePaginatedResponse, getTotalCommentCount } from "../helpers/pagination.helper.js";
 
 const { Comments } = db
 
-export const getComments = async (req, res) => {
-    const { params: { postId } } = req;
-
-    try {
-        // Assuming you have a foreign key relationship between Posts and Comments
-        const comments = await Comments.findAll({
-            where: { postId },
-        });
-
-        RESPONSE.success(res, 4006, comments); // Adjust the message code as needed
-    } catch (error) {
-         
-        RESPONSE.error(res, 9999, 500);
-    }
-};
 export const createComment = async (req, res) => {
-    const { body: { content, postId }, tokenData: { userId } } = req;
-
-    const validationErr = await isValidData({ content, postId, userId }, {
+    const { body: { content }, params: { postId, parentCommentId }, tokenData: { userId } } = req;
+    console.log(req.params)
+    const validationErr = await isValidData({ content }, {
         content: 'required|string',
-        postId: 'required|integer',
-        userId: 'required|integer',
     });
 
     if (validationErr) {
@@ -32,26 +18,26 @@ export const createComment = async (req, res) => {
     }
 
     try {
+
         const newComment = await Comments.create({
             content,
             postId,
             userId,
+            parentCommentId,
         });
 
-        RESPONSE.success(res, 4002, newComment); // Adjust the message code as needed
+        RESPONSE.success(res, 4002, newComment);
     } catch (error) {
-         
-        RESPONSE.error(res, 9999, 500);
+        console.log(error)
+        RESPONSE.error(res, 9999, 500, error);
     }
 };
 
 export const updateComment = async (req, res) => {
-    const { body: { content, postId, userId }, params: { commentId } } = req;
+    const { body: { content }, tokenData: { userId }, params: { commentId } } = req;
 
-    const validationErr = await isValidData({ content, postId, userId }, {
-        content: 'string',
-        postId: 'integer',
-        userId: 'integer',
+    const validationErr = await isValidData({ content }, {
+        content: 'string'
     });
 
     if (validationErr) {
@@ -59,44 +45,146 @@ export const updateComment = async (req, res) => {
     }
 
     try {
-        const [rowsUpdated, [updatedComment]] = await Comments.update(
+        const [rowsUpdated] = await Comments.update(
+            { content },
             {
-                content,
-                postId,
-                userId,
-            },
-            {
-                where: { id: commentId },
+                where: { id: commentId, userId },
                 returning: true,
             }
         );
 
         if (rowsUpdated > 0) {
-            RESPONSE.success(res, 4004, updatedComment); // Adjust the message code as needed
+            RESPONSE.success(res, 4004);
         } else {
-            RESPONSE.error(res, 4003, 404, 'Comment not found');
+            RESPONSE.error(res, 4003, 404);
         }
     } catch (error) {
-         
+
         RESPONSE.error(res, 9999, 500);
     }
 };
 
 export const deleteComment = async (req, res) => {
-    const { params: { commentId } } = req;
+    const { tokenData: { userId }, params: { commentId } } = req;
 
     try {
         const rowsDeleted = await Comments.destroy({
-            where: { id: commentId },
+            where: { id: commentId, userId },
         });
 
         if (rowsDeleted > 0) {
-            RESPONSE.success(res, 4005, { commentId }); // Adjust the message code as needed
+            RESPONSE.success(res, 4005, { commentId });
         } else {
-            RESPONSE.error(res, 4003, 404, 'Comment not found');
+            RESPONSE.error(res, 4003, 404);
         }
     } catch (error) {
-         
+
         RESPONSE.error(res, 9999, 500);
     }
 };
+
+export const getComments = async (req, res) => {
+    const { params: { postId, parentCommentId }, query } = req;
+
+    try {
+        const { page, limit, offset } = getPaginationMetadata(query);
+
+        const comments = await Comments.findAndCountAll({
+            where: { postId, parentCommentId: parentCommentId ? parentCommentId : null },
+            limit,
+            offset,
+        });
+
+        const paginatedResponse = getPaginatedResponse(comments, page, limit);
+        RESPONSE.success(res, 4001, paginatedResponse);
+    } catch (error) {
+        RESPONSE.error(res, 9999, 500, error);
+    }
+};
+
+export const getNestedComments = async (req, res) => {
+    const { params: { postId }, query } = req;
+
+    try {
+        const { page, limit, offset } = getPaginationMetadata(query);
+        const nestedComments = await getNestedCommentsPaginated(postId, offset, limit);
+
+        const totalCount = await getTotalCommentCount(Comments,postId);
+
+        const paginatedResponse = getRecursivePaginatedResponse(nestedComments, page, limit, totalCount);
+
+        RESPONSE.success(res, 4006, paginatedResponse);
+    } catch (error) {
+        RESPONSE.error(res, 9999, 500,error);
+    }
+};
+
+
+const getNestedCommentsPaginated = async (postId, offset, limit, parentCommentId = null) => {
+    const comments = await Comments.findAll({
+        where: {
+            postId,
+            parentCommentId,
+        },
+        limit,
+        offset,
+    });
+
+    const nestedComments = [];
+
+    for (const comment of comments) {
+        const replies = await getNestedCommentsPaginated(postId, 0, limit, comment.id);
+
+        nestedComments.push({
+            id: comment.id,
+            content: comment.content,
+            userId: comment.userId,
+            postId: comment.postId,
+            parentCommentId: comment.parentCommentId,
+            replies: replies,
+        });
+    }
+
+    return nestedComments;
+};
+
+
+// // Usage in your route/controller
+// export const getNestedComments = async (req, res) => {
+//     const { params: { postId }, query } = req;
+    
+//     try {
+//         const paginationMetaData = getPaginationMetadata(query);
+//         const nestedComments = await getNestedCommentsRecursive(postId, null, paginationMetaData);
+        
+//         RESPONSE.success(res, 4006, nestedComments); // Adjust the message code as needed
+//     } catch (error) {
+//         RESPONSE.error(res, 9999, 500, error);
+//     }
+// };
+
+// const getNestedCommentsRecursive = async (postId, parentCommentId = null, paginationMetaData) => {
+//     const { page, limit, offset } = paginationMetaData;
+//     const comments = await Comments.findAll({
+//         where: { postId, parentCommentId },
+//         limit,
+//         offset
+//     });
+    
+//     const nestedComments = [];
+    
+//     for (const comment of comments) {
+//         const replies = await getNestedCommentsRecursive(postId, comment.id, paginationMetaData);
+
+//         nestedComments.push({
+//             id: comment.id,
+//             content: comment.content,
+//             userId: comment.userId,
+//             postId: comment.postId,
+//             parentCommentId: comment.parentCommentId,
+//             replies: replies,
+//         });
+//     }
+
+//     return nestedComments;
+// };
