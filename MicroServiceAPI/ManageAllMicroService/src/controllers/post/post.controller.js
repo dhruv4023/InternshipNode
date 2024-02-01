@@ -33,7 +33,7 @@ export const getPostsByUserId = async (req, res) => {
         // Make a GET request to your API endpoint with pagination parameters
         const response = await axios.request({
             method: 'get',
-            url: `${POST_API_END}/api/v1/post/${req.params.userId}`,
+            url: `${POST_API_END}/api/v1/post/user/${req.params.userId}`,
             headers: {
                 'Content-Type': 'application/json'
             },

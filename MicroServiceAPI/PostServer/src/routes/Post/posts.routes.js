@@ -16,8 +16,8 @@ const router = express.Router();
 
 // Define routes
 router.get('/', getPosts);
-router.get('/:userId', getPostsByUserId);
 router.get('/:postId', getPostById);
+router.get('/user/:userId', getPostsByUserId);
 router.post('/', verifyToken, upload.array("imgs"), createPost);
 router.put('/:postId', verifyToken, upload.array("imgs"), updatePost);
 router.delete('/:postId', verifyToken, deletePost);
