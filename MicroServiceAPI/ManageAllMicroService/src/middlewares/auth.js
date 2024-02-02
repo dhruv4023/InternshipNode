@@ -9,7 +9,7 @@ export const verifyToken = (req, res, next) => {
 
     if (!token) {
       // If no token is provided, return a 403 Forbidden response     
-      RESPONSE.error(res, 5002, 403)
+      RESPONSE.error(res, "403 Forbidden response")
       return
     }
     // Check if the token starts with "Bearer " and remove it
@@ -30,7 +30,7 @@ export const verifyToken = (req, res, next) => {
     // Log the error for debugging purposes
     console.error(err);
     // Return a 500 Internal Server Error response with an error message
-    RESPONSE.error(res, 9999, 500, err);
+    RESPONSE.error(res, err);
   }
 };
 
