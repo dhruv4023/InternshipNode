@@ -27,14 +27,14 @@ export const sendVerificationLink = async (userData) => {
         `${verificationLink}\n\n` +
         `This link will expire in ${expMin} minutes.`;
 
-    console.log(verificationLink)
+    // console.log(verificationLink)
     try {
         // Send the verification email
-        // await sendEmailMail({
-        //     recipient: email,
-        //     subject: emailSubject,
-        //     body: emailBody,
-        // });
+        await sendEmailMail({
+            recipient: email,
+            subject: emailSubject,
+            body: emailBody,
+        });
     } catch (error) {
         throw new Error("Error sending verification email");
     }
