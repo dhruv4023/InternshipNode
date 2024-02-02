@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 app.use(session({
-  secret: process.env.SESSION_SK,
+  secret: process.env.SESSION_SK, 
   resave: false,
   saveUninitialized: true
 }));
@@ -24,12 +24,12 @@ const __dirname = dirname(__filename);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
+ 
 // Middleware setup
 app.use(express.json()); // Parse JSON request bodies
 app.use(bodyParser.json({ limit: "30mb", extended: true })); // Parse JSON requests with size limit
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true })); // Parse URL-encoded requests with size limit
-app.use(cors({ origin: JSON.parse(process.env.ORIGIN_URL_List) })); // Configure CORS for allowed origins
+app.use(cors()); // Configure CORS for allowed origins
 
 const header_footer = {
   pageTitle: "Login and User Authentication task", currentYear: 2024
@@ -80,6 +80,7 @@ mongoose
   .connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    dbName:"zzz"
   })
   .then(() => {
     console.log("MongoDB database connected");
