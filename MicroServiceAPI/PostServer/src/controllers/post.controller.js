@@ -207,7 +207,7 @@ export const deletePost = async (req, res) => {
         });
 
         // Delete images on Cloudinary
-        await deleteImages(images.map(img => img.imageUrl), transaction);
+        images?.length > 0 && await deleteImages(images.map(img => img.imageUrl), transaction);
 
         // Delete the post
         const rowsDeleted = await Posts.destroy({

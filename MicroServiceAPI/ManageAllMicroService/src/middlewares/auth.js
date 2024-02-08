@@ -8,7 +8,7 @@ export const verifyTokenAndRole = (allowedRoles) => (req, res, next) => {
     const token = authorization?.split("Bearer ")[1];
 
     if (!token) {
-      RESPONSE.error(res, 5002, 403);
+      RESPONSE.error(res, "invalid token");
       return;
     }
 
@@ -16,12 +16,13 @@ export const verifyTokenAndRole = (allowedRoles) => (req, res, next) => {
     req.tokenData = verified;
 
     if (!allowedRoles.includes(verified.role)) {
-      RESPONSE.error(res, 5001, 403);
+      RESPONSE.error(res, "unauthorised user");
       return;
     }
 
     next();
   } catch (error) {
-    RESPONSE.error(res, 9999, 500, error);
+    console.log(error)
+    RESPONSE.error(res, error);
   }
 };

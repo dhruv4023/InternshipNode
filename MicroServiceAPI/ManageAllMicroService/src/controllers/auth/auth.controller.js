@@ -74,7 +74,6 @@ export const getUserNames = async (req, res) => {
 
 export const changePassControl = async (req, res) => {
     try {
-        // console.log(req.headers.authorization)
         const response = await axios.request({
             method: 'put',
             url: `${AUTH_API_END}/api/v1/auth/change/password`,
