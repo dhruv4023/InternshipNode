@@ -124,7 +124,6 @@ export const uploadImages = async (files, userId, transaction) => {
         }
         return filePublicIds;
     } catch (error) {
-        console.log(error)
         await deleteImages(filePublicIds)
         throw Error("Error occured while uploading image")
     }

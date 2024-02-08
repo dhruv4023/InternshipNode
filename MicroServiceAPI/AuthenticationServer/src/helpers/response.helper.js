@@ -22,7 +22,6 @@ RESPONSE.error = function (res, messageCode, statusCode = 422, error = null, dat
 
     if (error != null) {
         response["Error Message"] = error.message;
-        console.log('error :>> ', error);
     }
 
     return res.status(statusCode).send(response);

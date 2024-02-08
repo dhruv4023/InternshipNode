@@ -87,7 +87,6 @@ export const changePassControl = async (req, res) => {
 
         RESPONSE.success(res, response);
     } catch (error) {
-        // console.log(error)
         RESPONSE.error(res, error);
     }
 };

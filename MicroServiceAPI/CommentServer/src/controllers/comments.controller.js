@@ -28,7 +28,7 @@ export const createComment = async (req, res) => {
 
         RESPONSE.success(res, 4002, newComment);
     } catch (error) {
-        console.log(error)
+         
         RESPONSE.error(res, 9999, 500, error);
     }
 };
@@ -147,44 +147,3 @@ const getNestedCommentsPaginated = async (postId, offset, limit, parentCommentId
 
     return nestedComments;
 };
-
-
-// // Usage in your route/controller
-// export const getNestedComments = async (req, res) => {
-//     const { params: { postId }, query } = req;
-    
-//     try {
-//         const paginationMetaData = getPaginationMetadata(query);
-//         const nestedComments = await getNestedCommentsRecursive(postId, null, paginationMetaData);
-        
-//         RESPONSE.success(res, 4006, nestedComments); // Adjust the message code as needed
-//     } catch (error) {
-//         RESPONSE.error(res, 9999, 500, error);
-//     }
-// };
-
-// const getNestedCommentsRecursive = async (postId, parentCommentId = null, paginationMetaData) => {
-//     const { page, limit, offset } = paginationMetaData;
-//     const comments = await Comments.findAll({
-//         where: { postId, parentCommentId },
-//         limit,
-//         offset
-//     });
-    
-//     const nestedComments = [];
-    
-//     for (const comment of comments) {
-//         const replies = await getNestedCommentsRecursive(postId, comment.id, paginationMetaData);
-
-//         nestedComments.push({
-//             id: comment.id,
-//             content: comment.content,
-//             userId: comment.userId,
-//             postId: comment.postId,
-//             parentCommentId: comment.parentCommentId,
-//             replies: replies,
-//         });
-//     }
-
-//     return nestedComments;
-// };

@@ -9,7 +9,7 @@ import {
   deletePost,
   getPostsByUserId,
 } from '../../controllers/post.controller.js';
-import { verifyToken } from '../../middlewares/auth.js';
+import { verifyTokenAndRole } from '../../middlewares/auth.js';
 import upload from '../../middlewares/file_uploder.js';
 
 const router = express.Router();
@@ -18,8 +18,8 @@ const router = express.Router();
 router.get('/', getPosts);
 router.get('/:postId', getPostById);
 router.get('/user/:userId', getPostsByUserId);
-router.post('/', verifyToken, upload.array("imgs"), createPost);
-router.put('/:postId', verifyToken, upload.array("imgs"), updatePost);
-router.delete('/:postId', verifyToken, deletePost);
+router.post('/', verifyTokenAndRole(['user', "admin"]), upload.array("imgs"), createPost);
+router.put('/:postId', verifyTokenAndRole(['user', "admin"]), upload.array("imgs"), updatePost);
+router.delete('/:postId', verifyTokenAndRole(['user', "admin"]), deletePost);
 
 export default router;

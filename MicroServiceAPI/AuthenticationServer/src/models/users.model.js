@@ -43,9 +43,9 @@ const userSchema = new mongoose.Schema(
       city: { type: String, require: true },
       pincode: { type: Number, require: true },
     },
-    roles: {
+    role: {
       type: String,
-      enum: ['admin', 'user'], // Only 'admin' or 'user' roles are allowed
+      enum: ['admin', 'user'], // Only 'admin' or 'user' role is allowed
       default: 'user', // Default role is 'user'
     },
   },

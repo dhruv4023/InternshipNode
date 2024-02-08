@@ -4,7 +4,7 @@ import {
   getUsers, 
   updateUserData,
 } from "../../controllers/auth/user.controller.js";
-import { verifyToken } from "../../middlewares/auth.js";
+import { verifyTokenAndRole } from "../../middlewares/auth.js";
 import upload from "../../middlewares/file_uploder.js";
 
 // Create a new Express Router
@@ -16,7 +16,7 @@ routes.get("/get/:uid", getUsers);
 // Define a POST route to update user data by ID, with token verification and file upload
 routes.put(
   "/update/",
-  verifyToken, // Middleware to verify JWT token
+  verifyTokenAndRole(['user', "admin"]), // Middleware to verify JWT token
   upload.single("picPath"), // Middleware for uploading a single file
   updateUserData
 );

@@ -10,7 +10,6 @@ const logger = async (req, res, next) => {
         await db.ApiLogs.create(obj);
         next();
     } catch (error) {
-        console.log(error);
         next();
     }
 };
