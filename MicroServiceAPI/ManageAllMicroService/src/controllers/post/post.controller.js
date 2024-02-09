@@ -22,7 +22,7 @@ export const getPosts = async (req, res) => {
         // Send a success response with the paginated posts
         RESPONSE.success(res, response);
     } catch (error) {
-        console.error(error);
+         
         // If an error occurs during the API request, log the error and send a 500 Internal Server Error response
         RESPONSE.error(res, error);
     }
@@ -43,7 +43,7 @@ export const getPostsByUserId = async (req, res) => {
         // Send a success response with the paginated posts
         RESPONSE.success(res, response);
     } catch (error) {
-        console.error(error);
+         
         // If an error occurs during the API request, log the error and send a 500 Internal Server Error response
         RESPONSE.error(res, error);
     }

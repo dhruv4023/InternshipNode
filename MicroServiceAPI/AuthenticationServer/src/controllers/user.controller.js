@@ -83,7 +83,7 @@ export const updateUserData = async (req, res) => {
             });
             filePath = fileData.public_id;
         }
-        // console.log(filePath)
+        
         // Update the user's data in the database
         await Users.findOneAndUpdate(
             { id },

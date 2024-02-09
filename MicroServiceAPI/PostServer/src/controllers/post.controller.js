@@ -24,7 +24,6 @@ export const getPosts = async (req, res) => {
         // Send a success response with the paginated posts
         RESPONSE.success(res, 3005, paginatedResponse);
     } catch (error) {
-        console.error(error);
         // If an error occurs during post retrieval, log the error and send a 500 Internal Server Error response
         RESPONSE.error(res, 9999, 500);
     }
@@ -49,7 +48,6 @@ export const getPostsByUserId = async (req, res) => {
         // Send a success response with the paginated posts
         RESPONSE.success(res, 3005, paginatedResponse);
     } catch (error) {
-        console.error(error);
         // If an error occurs during post retrieval, log the error and send a 500 Internal Server Error response
         RESPONSE.error(res, 9999, 500);
     }
@@ -90,7 +88,7 @@ export const createPost = async (req, res) => {
         }, { transaction: t });
 
         const imgUrls = await uploadImages(req.files, userId, t);
-        
+
         // Create associated images with the post
         await Images.bulkCreate(
             imgUrls.map(imageUrl => ({ imageUrl, postId: newPost.id })),
@@ -101,7 +99,6 @@ export const createPost = async (req, res) => {
 
         RESPONSE.success(res, 3001, newPost);
     } catch (error) {
-        console.error(error);
         await t.rollback();  // Rollback the transaction if an error occurs
         RESPONSE.error(res, 9999, 500);
     }
@@ -187,7 +184,6 @@ export const updatePost = async (req, res) => {
 
     } catch (error) {
         await transaction.rollback();  // Rollback the transaction if an error occurs
-        console.error(error);
         RESPONSE.error(res, 9999, 500);
     }
 };

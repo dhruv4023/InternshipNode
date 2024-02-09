@@ -26,7 +26,7 @@ export const uploadFile = ({ file, newImgFileName, dirAddress }) => {
       // Pipe the file's stream to the Cloudinary upload stream
       streamifier.createReadStream(file.buffer).pipe(result);
     } catch (error) {
-      console.error("Error during file upload:", error);
+      // console.error("Error during file upload:", error);
       reject(error); // Reject the Promise on any other errors
     }
   });
@@ -37,7 +37,7 @@ export const deleteImages = async (publicIds) => {
     return await cloudinary.api.delete_resources(publicIds);
     // console.log(result);
   } catch (error) {
-    console.error('Error deleting images:', error);
+    // console.error('Error deleting images:', error);
     throw error;
   }
 };
@@ -46,7 +46,7 @@ export const deleteImage = async (publicId) => {
   try {
     return await cloudinary.uploader.destroy(publicId);
   } catch (error) {
-    console.error('Error deleting image:', error);
+    // console.error('Error deleting image:', error);
     throw error;
   }
 };

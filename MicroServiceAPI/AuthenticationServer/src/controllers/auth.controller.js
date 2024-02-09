@@ -18,6 +18,7 @@ export const registerControl = async (req, res) => {
     email: 'required|email',
     password: 'required|password',
   })
+
   if (validationErr)
     return RESPONSE.error(res, validationErr);
 
@@ -60,8 +61,7 @@ export const registerControl = async (req, res) => {
     };
 
     await sendVerificationLink(newUser);
-    // Save the new user to the database
-    // await newUser.save();
+    
     // Send a success response
     RESPONSE.success(res, 1008);
   } catch (error) {
