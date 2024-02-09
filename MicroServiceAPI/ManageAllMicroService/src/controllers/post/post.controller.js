@@ -1,15 +1,15 @@
-import axios from 'axios';
 import FormData from 'form-data';
 
 import RESPONSE from '../../helpers/response.helper.js';
 import config from '../../config/config.js';
+import { sendRequest } from '../../helpers/handle_request_axios.js';
 
 const POST_API_END = config.micro_services.post_api_end;
 
 
 export const getPosts = async (req, res) => {
     try {
-        const response = await sendRequest('get', `${POST_API_END}/api/v1/post/`, { 'Content-Type': 'application/json' }, null, req.query);
+        const response = await sendRequest('get', `${POST_API_END}/api/v1/post/`, { 'Content-Type': 'application/json' }, {}, req.query);
 
         RESPONSE.success(res, response);
     } catch (error) {
@@ -19,7 +19,7 @@ export const getPosts = async (req, res) => {
 
 export const getPostsByUserId = async (req, res) => {
     try {
-        const response = await sendRequest('get', `${POST_API_END}/api/v1/post/user/${req.params.userId}`, { 'Content-Type': 'application/json' }, null, req.query);
+        const response = await sendRequest('get', `${POST_API_END}/api/v1/post/user/${req.params.userId}`, { 'Content-Type': 'application/json' }, {}, req.query);
 
         RESPONSE.success(res, response);
     } catch (error) {
@@ -29,7 +29,7 @@ export const getPostsByUserId = async (req, res) => {
 
 export const getPostById = async (req, res) => {
     try {
-        const response = await sendRequest('get', `${POST_API_END}/api/v1/post/${req.params.postId}`, { 'Content-Type': 'application/json' });
+        const response = await sendRequest('get', `${POST_API_END}/api/v1/post/${req.params.postId}`, { 'Content-Type': 'application/json' }, {}, req.params);
 
         RESPONSE.success(res, response);
     } catch (error) {
