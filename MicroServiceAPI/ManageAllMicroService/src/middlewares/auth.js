@@ -22,7 +22,6 @@ export const verifyTokenAndRole = (allowedRoles) => (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log(error)
     RESPONSE.error(res, error);
   }
 };

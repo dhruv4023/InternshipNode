@@ -29,6 +29,7 @@ export const registerControl = async (req, res) => {
       city: req.body["location.city"],
       pincode: req.body["location.pincode"],
     };
+
     // Check if a user with the same email already exists
     const user = await Users.findOne({ email });
 
@@ -77,6 +78,7 @@ export const loginControl = async (req, res) => {
     uid: 'required|isEmailOrUsername',
     password: 'required|password',
   })
+
   if (validationErr)
     return RESPONSE.error(res, validationErr);
 
@@ -94,19 +96,15 @@ export const loginControl = async (req, res) => {
       );
 
       // If user doesn't exist, rollback the transaction and return a 400 Bad Request response
-      if (!user) {
+      if (!user)
         return RESPONSE.error(res, 1027, 400);
-      }
 
       // If passwords don't match, rollback the transaction and return a 400 Bad Request response
-      if (!comparePassword(password, user.password)) {
+      if (!comparePassword(password, user.password))
         return RESPONSE.error(res, 1005, 400);
-      }
 
       // Generate a JWT token for the authenticated user
-      const token = generateJWTToken({
-        data: { userId: user.id, role: user.role },
-      });
+      const token = generateJWTToken({ data: { userId: user.id, role: user.role }, });
 
       // Hide the password in the user object before sending the response
       user.password = undefined;

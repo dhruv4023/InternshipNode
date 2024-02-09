@@ -8,7 +8,7 @@ const { Comments } = db
 
 export const createComment = async (req, res) => {
     const { body: { content }, params: { postId, parentCommentId }, tokenData: { userId } } = req;
-    console.log(req.params)
+    
     const validationErr = await isValidData({ content }, {
         content: 'required|string',
     });

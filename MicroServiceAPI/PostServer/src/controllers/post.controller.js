@@ -80,10 +80,8 @@ export const createPost = async (req, res) => {
 
     const t = await sequelize.transaction();
 
-    // console.log(req.files)
     try {
         const { body: { title, content }, tokenData: { userId } } = req;
-
 
         const newPost = await Posts.create({
             title,
@@ -92,6 +90,7 @@ export const createPost = async (req, res) => {
         }, { transaction: t });
 
         const imgUrls = await uploadImages(req.files, userId, t);
+        
         // Create associated images with the post
         await Images.bulkCreate(
             imgUrls.map(imageUrl => ({ imageUrl, postId: newPost.id })),
@@ -119,7 +118,7 @@ export const uploadImages = async (files, userId, transaction) => {
                 dirAddress: `Users/${userId}/posts/images/`,
             }, transaction);
             filePublicIds.push(fileData.public_id);
-            console.log(fileData.public_id)
+            // console.log(fileData.public_id)
             // fileName = 5;
         }
         return filePublicIds;
