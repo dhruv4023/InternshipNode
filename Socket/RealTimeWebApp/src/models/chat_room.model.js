@@ -1,14 +1,12 @@
 import mongoose from "mongoose";
+import messageSchema from "./message.model.js";
 
-// Define the schema for chatrooms
 export default new mongoose.Schema({
   name: {
     type: String,
     required: true,
     unique: true
   },
-  messages: [] // Embed the messages schema
+  messages: [messageSchema] // Embed the messages schema within the chatroom schema
 });
-
-
 

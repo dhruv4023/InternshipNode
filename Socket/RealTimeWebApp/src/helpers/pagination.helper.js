@@ -1,21 +1,20 @@
 // Utility functions for paginating user lists
 
-const getPaginationMetadata = (query) => {
-    const page = parseInt(query.page, 10) || 1;
-    const limit = parseInt(query.limit, 10) || 10;
-    const offset = (page - 1) * limit;
-    return { page, limit, offset };
+const getPaginationMetadata = ({ page, limit }) => {
+    const startIndex = parseInt(page) * parseInt(limit) || 0;
+    const endIndex = startIndex + parseInt(limit) || 10;
+    return { startIndex, endIndex };
 }
 
 const getPaginatedResponse = (data, page, limit) => {
     return {
-        page_data: data.rows,
+        page_data: data,
         page_information: {
-            total_data: data.count,
-            last_page: Math.ceil(data.count / limit),
+            total_data: data.length,
+            last_page: Math.ceil(data.length / limit),
             current_page: page,
             previous_page: 0 + (page - 1),
-            next_page: page < Math.ceil(data.count / limit) ? page + 1 : 0
+            next_page: page < Math.ceil(data.length / limit) ? page + 1 : 0
         }
     }
 }
@@ -33,7 +32,7 @@ const getRecursivePaginatedResponse = (data, page, limit, totalCount) => {
     };
 };
 
-const getTotalCommentCount = async (Comments,postId) => {
+const getTotalCommentCount = async (Comments, postId) => {
     const totalCount = await Comments.count({
         where: {
             postId,

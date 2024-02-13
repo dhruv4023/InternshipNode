@@ -15,12 +15,14 @@ mongoose
     .catch((e) => {
         console.log("db not connected: ", e);
     });
-import chatRoomSchema from "./chat_room.model.js";
+
 import messagesSchema from "./message.model.js";
+import chatRoomSchema from "./chat_room.model.js";
 
 const db = {
-    ChatRooms: mongoose.model("ChatRoom", chatRoomSchema),
-    Messages: mongoose.model("Message", messagesSchema)
+    Messages: mongoose.model("Messages", messagesSchema),
+    ChatRooms: mongoose.model("ChatRooms", chatRoomSchema),
 }
 
+db.mongoose = mongoose
 export default db;

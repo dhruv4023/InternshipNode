@@ -7,7 +7,7 @@ import messageRoutes from './message.routes.js';
 
 // defining routes
 router.use('/chat/room', chatRoomRoutes);
-router.use('/message', messageRoutes);
+router.use('/chat/message', messageRoutes);
 
 // exporting router
 export default router;
