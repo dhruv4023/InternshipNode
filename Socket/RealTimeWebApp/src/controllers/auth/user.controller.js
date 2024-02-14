@@ -8,12 +8,13 @@ const AUTH_API_END = config.micro_services.auth_api_end;
 
 export const getUsers = async (req, res) => {
     try {
+        console.log(req.params)
         const response = await sendRequest('get', `${AUTH_API_END}/api/v1/user/get/${req.params.uid}`, {
             'Content-Type': 'application/json'
         });
-        RESPONSE.success(res, response);
+        RESPONSE.successMediator(res, response);
     } catch (error) {
-        RESPONSE.error(res, error);
+        RESPONSE.errorMediator(res, error);
     }
 };
 
@@ -35,8 +36,9 @@ export const updateUserData = async (req, res) => {
             ...formData.getHeaders(),
             'Authorization': req.header("Authorization")
         }, formData);
-        RESPONSE.success(res, response);
+
+        RESPONSE.successMediator(res, response);
     } catch (error) {
-        RESPONSE.error(res, error);
+        RESPONSE.errorMediator(res, error);
     }
 };

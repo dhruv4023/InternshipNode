@@ -26,4 +26,12 @@ RESPONSE.error = function (res, messageCode, statusCode = 422, error = null, dat
     return res.status(statusCode).send(response);
 };
 
+RESPONSE.successMediator = function (res, response) {
+    return res.status(response.status).json(response.data);
+};
+
+RESPONSE.errorMediator = function (res, error) {
+    return res.status(error?.response?.status || 500).json(error?.response?.data || error);
+};
+
 export default RESPONSE;
