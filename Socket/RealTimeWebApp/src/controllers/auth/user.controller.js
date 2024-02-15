@@ -8,7 +8,6 @@ const AUTH_API_END = config.micro_services.auth_api_end;
 
 export const getUsers = async (req, res) => {
     try {
-        console.log(req.params)
         const response = await sendRequest('get', `${AUTH_API_END}/api/v1/user/get/${req.params.uid}`, {
             'Content-Type': 'application/json'
         });

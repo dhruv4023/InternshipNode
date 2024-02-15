@@ -1,6 +1,6 @@
 import FlexBetween from "Components/FlexBetween";
 import FlexEvenly from "Components/FlexEvenly";
-import Loading from "Components/Loader/Loading";
+import Loading from "Components/Loading/Loading";
 import React, { useEffect, useState } from "react";
 import {
   getAuctionEndedData,

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { register, sendMail, updateProfile } from "./LoginRegisterChangePass";
 import { useDispatch, useSelector } from "react-redux";
-import Loading from "../../Components/Loader/Loading";
+import Loading from "../../Components/Loading/Loading";
 
 const EmailVerification = () => {
   // Get the current location and navigation function

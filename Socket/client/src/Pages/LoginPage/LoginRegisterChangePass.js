@@ -32,7 +32,7 @@ export const register = async (values) => {
 
 // Function to log in a user
 export const login = async (values, dispatch, setLogin, navigate) => {
-  console.log(process.env.REACT_APP_REST_API)
+  
   const loggedInResponse = await fetch(
     `${process.env.REACT_APP_REST_API}/auth/login`,
     {
@@ -96,7 +96,7 @@ export const updateProfile = async (values, dispatch, token, navigate) => {
     }
   );
   const savedUser = await savedUserResponse.json();
-  if (savedUser.data.user) {
+  if (savedUser?.data?.user) {
     dispatch(
       setLogin({
         user: savedUser.data.user,

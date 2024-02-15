@@ -1,5 +1,5 @@
 // Import necessary dependencies and components
-import Loading from '../../Components/Loader/Loading'
+import Loading from '../../Components/Loading/Loading'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -7,6 +7,7 @@ import EditProfileWidget from '../../Widgets/EditProfileWidget'
 import UserWidgets from '../../Widgets/UserWidgets'
 import { getUser } from '../../Widgets/WidgetFunctions'
 import WidgetsOnPage from '../../Components/WidgetsOnPage'
+import WidgetWrapper from '../../Components/WidgetWrapper'
 
 // Define the ProfilePage component
 export const ProfilePage = () => {
@@ -65,18 +66,22 @@ const LeftComponents = ({ setEditProf, UID, admin, user }) => {
 }
 
 const RightComponents = ({ user, editProf, setEditProf, UID, admin }) => {
-  const [refreshPage, setRefreshPage] = useState(true)
+  // const [refreshPage, setRefreshPage] = useState(true)
   return (
     <>
       {editProf ? (
         <>
-          {/* Render EditProfileWidget component with specific props */}
           <EditProfileWidget setEditProf={setEditProf} user={user} />
+          {/* Render EditProfileWidget component with specific props */}
         </>
       ) : (
         <>
           {/* Render Auctions component with specific props */}
-          {admin.username===UID && <>Click on pencil icon to Edit your Profile</>}
+          {admin.username === UID && (
+            <WidgetWrapper>
+              Click on pencil icon to Edit your Profile
+            </WidgetWrapper>
+          )}
         </>
       )}
     </>

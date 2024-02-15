@@ -7,6 +7,14 @@ export default new mongoose.Schema({
     required: true,
     unique: true
   },
-  messages: [messageSchema] // Embed the messages schema within the chatroom schema
+  messages: [messageSchema], // Embed the messages schema within the chatroom schema
+  users: [{
+    userId: {
+      type: String,
+      required: true,
+      unique: true,
+      admin: Boolean
+    }
+  }]
 });
 

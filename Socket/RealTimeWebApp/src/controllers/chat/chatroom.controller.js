@@ -36,12 +36,14 @@ export const getAllChatrooms = async (req, res) => {
 export const getChatroomById = async (req, res) => {
     try {
         const { params: { id }, query: { limit = 5 } } = req;
-        console.log(id)
+
         const chatroom = await ChatRooms.findOne({ _id: id }, { "messages": { "$slice": [(0), parseInt(limit)] } });
-        console.log(chatroom)
+
         if (!chatroom) {
             return RESPONSE.error(res, 4103, 404); // Chatroom not found
         }
+        
+        chatroom.messages.sort((b, a) => b.timestamp - a.timestamp);
         return RESPONSE.success(res, 4101, chatroom); // Chatroom retrieved successfully
     } catch (error) {
         console.error('Error fetching chatroom:', error);

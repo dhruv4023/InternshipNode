@@ -1,7 +1,7 @@
 // Utility functions for paginating user lists
 
 const getPaginationMetadata = ({ page, limit }) => {
-    const startIndex = parseInt(page) * parseInt(limit) || 0;
+    const startIndex = (parseInt(page) - 1) * parseInt(limit) || 0;
     const endIndex = startIndex + parseInt(limit) || 10;
     return { startIndex, endIndex };
 }

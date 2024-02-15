@@ -17,7 +17,7 @@ import FlexEvenly from "../../Components/FlexEvenly";
 import { getUserNames, login, updateProfile } from "./LoginRegisterChangePass";
 import { SelectLocation } from "../../Components/MyComponents";
 import { CheckBox, CheckBoxOutlineBlank } from "@mui/icons-material";
-import Loading from "../../Components/Loader/Loading";
+import Loading from "../../Components/Loading/Loading";
 
 const Form = ({ pgType, editProfile, user }) => {
   // Initial values for registration and login
