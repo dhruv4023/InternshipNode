@@ -16,7 +16,7 @@ const AllChat = () => {
     fetchChatrooms(token).then(d => setChats(d))
   }, [setChats])
   const navigate = useNavigate()
-  console.log(chats)
+  
   return (
     <FlexEvenly flexDirection={'column'} gap={'0.5rem'}>
       {chats ? (

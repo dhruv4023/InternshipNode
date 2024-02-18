@@ -25,8 +25,6 @@ const NewMsg = ({ CID, socket }) => {
     }
   }, [socket, setMsgList])
 
-  console.log(msgList)
-
   return (
     <>
       <Box width={'100%'}>

@@ -35,7 +35,7 @@ const ChatBox = ({ messages, socket, CID }) => {
         setPage(page + 1)
       })
       .finally(() => setLoading(false))
-    console.log('called',page)
+    // console.log('called',page)
   }
   return (
     <WidgetWrapper>

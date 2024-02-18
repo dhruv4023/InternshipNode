@@ -17,13 +17,8 @@ const NewChatForm = ({ data, setOpenAddPopUp }) => {
     setValues(tmp)
   }
 
-  const onUsernameChangehandle = (val, name) => {}
-
-  const [aID, setAID] = useState()
-
   useEffect(() => {
     if (data) {
-      data?._id && setAID(data._id)
       setValues({
         user_id: user._id,
         users: data.users

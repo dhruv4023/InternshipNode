@@ -60,7 +60,7 @@ export const ProfilePage = () => {
 }
 
 const LeftComponents = ({ setEditProf, UID, admin, user }) => {
-  console.log(user)
+  
   return (
     <>
       {user ? (

@@ -12,7 +12,7 @@ export const createChatRoom = async ({ data, token }) => {
     try {
         const response = await fetch(`${process.env.REACT_APP_REST_API}/chat/room/`, requestOptions);
         const result = await response.json();
-        console.log(result)
+        
         if (result.success) return result;
         else alert(result.message)
     } catch (error) {

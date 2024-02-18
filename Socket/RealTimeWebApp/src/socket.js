@@ -6,7 +6,7 @@ import { addMessageToChatRoom } from './services/message.service.js';
 const userSocketMap = new Map();
 
 export function setupSocketIO(server) {
-    const io = new Server(server, { cors: { origin: '*' } });
+    const io = new Server(server, { cors: { origins: config.origin_url_list } });
 
     // Define socket.io logic
     io.on("connection", (socket) => {
