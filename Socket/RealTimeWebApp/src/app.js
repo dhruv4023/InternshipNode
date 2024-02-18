@@ -13,7 +13,7 @@ app.use(morgan("common")); // Log HTTP requests
 app.use(cors({ origin: 'http://localhost:3000' })); // Configure CORS for allowed origins
 
 app.get("/", (req, res) => {
-  res.render("index", { message: "Server is running..." });
+  res.send("Server is running...");
 });
 
 // Importing routes
