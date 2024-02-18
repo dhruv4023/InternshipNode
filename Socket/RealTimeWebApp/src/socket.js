@@ -25,7 +25,6 @@ export function setupSocketIO(server) {
                 userSocketMap[chatRoomId] = [socket.id];
             }
         } catch (error) {
-            console.error("Token verification failed:", error.message);
             socket.disconnect(); // Disconnect the socket if token verification fails
         }
         console.log(`Socket ${socket.id} joined chat room ${chatRoomId}`);

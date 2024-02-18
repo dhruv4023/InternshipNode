@@ -17,7 +17,6 @@ export const createMessage = async (req, res) => {
 
         RESPONSE.success(res, 4202, message)
     } catch (error) {
-        console.error('Error creating message:', error);
         RESPONSE.error(res, 9000)
     }
 }
@@ -38,9 +37,9 @@ export const getMessagesByChatroomId = async (req, res) => {
 
         chatroom.messages.sort((b, a) => b.timestamp - a.timestamp);
         const paginatedResponse = getPaginatedResponse(chatroom.messages, page, limit)
+
         RESPONSE.success(res, 4201, paginatedResponse)
     } catch (error) {
-        console.error('Error fetching messages:', error);
         RESPONSE.error(res, 9000)
     }
 }

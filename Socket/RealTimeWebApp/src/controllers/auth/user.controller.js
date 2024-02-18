@@ -6,9 +6,21 @@ import { sendRequest } from '../../helpers/handle_request_axios.js';
 
 const AUTH_API_END = config.micro_services.auth_api_end;
 
+export const getOtherUsers = async (req, res) => {
+    try {
+        const response = await sendRequest('get', `${AUTH_API_END}/api/v1/user/get/other`, {
+            'Content-Type': 'application/json',
+            'Authorization': req.header("Authorization")
+        }, {}, req.query);
+        RESPONSE.successMediator(res, response);
+    } catch (error) {
+        RESPONSE.errorMediator(res, error);
+    }
+};
+
 export const getUsers = async (req, res) => {
     try {
-        const response = await sendRequest('get', `${AUTH_API_END}/api/v1/user/get/${req.params.uid}`, {
+        const response = await sendRequest('get', `${AUTH_API_END}/api/v1/user/get/userid/${req.params.uid}`, {
             'Content-Type': 'application/json'
         });
         RESPONSE.successMediator(res, response);

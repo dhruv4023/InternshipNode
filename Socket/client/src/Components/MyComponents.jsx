@@ -112,7 +112,8 @@ export const MyTextField = ({
   setInputVal,
   mxVal,
   mnVal,
-  type = 'text'
+  type = 'text',
+  error = false
 }) => {
   const nm = String(name).replace('_', ' ')
   return (
@@ -123,6 +124,7 @@ export const MyTextField = ({
       name='Name'
       required
       type={type}
+      error={error}
       value={val}
       InputProps={{
         inputProps: {

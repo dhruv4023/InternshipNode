@@ -32,7 +32,6 @@ export const addMessageToChatRoom = async ({ chatRoomId, userId, content }) => {
 
         return message;
     } catch (error) {
-        console.error('Error adding message to chatroom:', error);
         await session.abortTransaction();
         session.endSession();
         throw error; // Propagate the error to the caller

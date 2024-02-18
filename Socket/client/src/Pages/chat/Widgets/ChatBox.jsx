@@ -26,16 +26,16 @@ const ChatBox = ({ messages, socket, CID }) => {
   }, [CID])
   const [loading, setLoading] = useState(false)
   const [msgList, setMessages] = useState(messages)
-  const [page, setPage] = useState(2)
+  const [page, setPage] = useState(1)
   const retriveOldMsgs = () => {
     setLoading(true)
     getChatMessages({ page, chatRoomId: CID })
       .then(data => {
-        setMessages([...data, ...msgList])
+        page === 1 ? setMessages(msgList) : setMessages([...data, ...msgList])
         setPage(page + 1)
       })
       .finally(() => setLoading(false))
-    console.log('called')
+    console.log('called',page)
   }
   return (
     <WidgetWrapper>
@@ -55,7 +55,7 @@ const ChatBox = ({ messages, socket, CID }) => {
             height={'55vh'}
             flexDirection={'column'}
             overflow={'auto'}
-            marginBottom={"5rem"}
+            marginBottom={'5rem'}
           >
             <OldMsgs messages={msgList} CID={CID} />
             <NewMsg socket={socket} CID={CID} />

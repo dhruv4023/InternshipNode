@@ -1,5 +1,5 @@
 import express from 'express';
-import { createChatroom, getAllChatrooms, getChatroomById } from '../../controllers/chat/chatroom.controller.js';
+import { createChatroom, getAllChatroomsByUser, getChatroomById } from '../../controllers/chat/chatroom.controller.js';
 import { verifyTokenAndRole } from '../../middlewares/auth.js';
 
 const router = express.Router();
@@ -8,9 +8,9 @@ const router = express.Router();
 router.post('/', verifyTokenAndRole(["admin", "user"]), createChatroom);
 
 // Route to get all chatrooms
-router.get('/all/', getAllChatrooms);
+router.get('/all/', verifyTokenAndRole(["user", "admin"]), getAllChatroomsByUser);
 
 // Route to get a specific chatroom by ID
-router.get('/:id', getChatroomById);
+router.get('/:id', verifyTokenAndRole(["user", "admin"]), getChatroomById);
 
 export default router;

@@ -27,6 +27,6 @@ setupSocketIO(server);
 // Start the Express server
 server.listen(config.port, () => {
     console.log(
-        `Server is listening on port ${config.port} in ${config.node_env} mode`
+        `Server is listening on port ${config.protocol} ${config.port} in ${config.node_env} mode`
     );
 });

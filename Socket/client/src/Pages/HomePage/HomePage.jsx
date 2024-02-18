@@ -1,29 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import WidgetsOnPage from '../../Components/WidgetsOnPage'
-import { getAllChat } from './HomePage.api'
-import Loading from '../../Components/Loading/Loading'
-import RenderChats from './Widgets/RenderChats'
-
+import React, { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 const HomePage = () => {
-  // State to manage the display index of auctions
-  // const [displayIndex, setDisplayIndex] = useState(1)
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(5)
-  const [chatData, setChatData] = useState()
+  const navigate = useNavigate()
+  const user = useSelector(s => s.user)
   useEffect(() => {
-    getAllChat({ page, limit, setChatData })
-  }, [])
-
-  return (
-    <>
-      {/* WidgetsOnPage component that displays auctions */}
-      <WidgetsOnPage
-        title={'Chats'}
-        leftComponent={<>Left</>}
-        rightComponent={<>Right</>}
-      />
-    </>
-  )
+    if (user) {
+      navigate(`/profile/${user.username}`)
+    } else {
+      navigate(`/login`)
+    }
+  }, [user, navigate])
+  return <></>
 }
 
 export default HomePage

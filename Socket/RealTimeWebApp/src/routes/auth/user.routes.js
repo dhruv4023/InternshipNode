@@ -1,7 +1,8 @@
 import express from "express";
 
 import {
-  getUsers, 
+  getOtherUsers,
+  getUsers,
   updateUserData,
 } from "../../controllers/auth/user.controller.js";
 import { verifyTokenAndRole } from "../../middlewares/auth.js";
@@ -11,7 +12,9 @@ import upload from "../../middlewares/file_uploder.js";
 const routes = express.Router();
 
 // Define a GET route to fetch user data by UID
-routes.get("/get/:uid", getUsers);
+routes.get("/get/userid/:uid", getUsers);
+
+routes.get("/get/other", getOtherUsers);
 
 // Define a POST route to update user data by ID, with token verification and file upload
 routes.put(

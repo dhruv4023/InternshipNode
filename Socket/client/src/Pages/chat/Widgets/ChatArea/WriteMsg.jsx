@@ -7,6 +7,7 @@ const WriteMsg = ({ CID, socket }) => {
   const [val, setVal] = useState('')
   const handleSendMess = e => {
     e.preventDefault()
+    setVal("")
     socket.send(
       JSON.stringify({
         type: 'message',

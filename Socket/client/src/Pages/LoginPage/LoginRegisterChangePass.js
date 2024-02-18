@@ -42,6 +42,7 @@ export const login = async (values, dispatch, setLogin, navigate) => {
     }
   );
   const loggedIn = await loggedInResponse.json();
+
   if (loggedIn.success) {
     dispatch(
       setLogin({

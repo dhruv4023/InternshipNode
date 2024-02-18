@@ -3,11 +3,12 @@ import Loading from '../../Components/Loading/Loading'
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
-import EditProfileWidget from '../../Widgets/EditProfileWidget'
-import UserWidgets from '../../Widgets/UserWidgets'
-import { getUser } from '../../Widgets/WidgetFunctions'
+import EditProfileWidget from './Widgets/EditProfileWidget'
+import UserWidgets from './Widgets/UserWidgets'
 import WidgetsOnPage from '../../Components/WidgetsOnPage'
-import WidgetWrapper from '../../Components/WidgetWrapper'
+import AddNewChat from '../../PopUps/StartNewChat/AddNewChat'
+import AllChat from './Widgets/AllChat'
+import { getUser } from './User.api'
 
 // Define the ProfilePage component
 export const ProfilePage = () => {
@@ -18,36 +19,48 @@ export const ProfilePage = () => {
   const [user, setUser] = useState(null)
   // Use the useEffect hook to fetch user data based on the UID parameter
   useEffect(() => {
-    UID && !user && getUser(setUser, UID, navigate)
+    UID &&
+      !user &&
+      getUser(UID).then(data => {
+        data ? setUser(data) : navigate('/404', { state: 'Profile Not Found' })
+      })
   }, [UID])
   // console.log(user)
   return (
     <>
-      {/* Render WidgetsOnPage component */}
-      <WidgetsOnPage
-        leftComponent={
-          <LeftComponents
-            user={user}
-            UID={UID}
-            admin={admin}
-            setEditProf={setEditProf}
+      {user ? (
+        <>
+          <WidgetsOnPage
+            leftComponent={
+              <LeftComponents
+                user={user}
+                UID={UID}
+                admin={admin}
+                setEditProf={setEditProf}
+              />
+            }
+            rightComponent={
+              <RightComponents
+                UID={UID}
+                admin={admin}
+                user={user}
+                editProf={editProf}
+                setEditProf={setEditProf}
+              />
+            }
           />
-        }
-        rightComponent={
-          <RightComponents
-            UID={UID}
-            admin={admin}
-            user={user}
-            editProf={editProf}
-            setEditProf={setEditProf}
-          />
-        }
-      />
+
+          <AddNewChat />
+        </>
+      ) : (
+        <Loading />
+      )}
     </>
   )
 }
 
 const LeftComponents = ({ setEditProf, UID, admin, user }) => {
+  console.log(user)
   return (
     <>
       {user ? (
@@ -77,11 +90,7 @@ const RightComponents = ({ user, editProf, setEditProf, UID, admin }) => {
       ) : (
         <>
           {/* Render Auctions component with specific props */}
-          {admin.username === UID && (
-            <WidgetWrapper>
-              Click on pencil icon to Edit your Profile
-            </WidgetWrapper>
-          )}
+          {admin.username === UID && <AllChat />}
         </>
       )}
     </>

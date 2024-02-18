@@ -6,7 +6,7 @@ export const verifyTokenAndRole = (allowedRoles) => (req, res, next) => {
   try {
     const { authorization } = req.headers;
     const token = authorization?.split("Bearer ")[1];
-
+   
     if (!token) {
       RESPONSE.error(res, "invalid token");
       return;
@@ -14,7 +14,7 @@ export const verifyTokenAndRole = (allowedRoles) => (req, res, next) => {
 
     const verified = jwt.verify(token, config.jwt_secret);
     req.tokenData = verified;
-    console.log("verified", verified)
+    
     if (!allowedRoles.includes(verified.role)) {
       RESPONSE.error(res, "unauthorised user");
       return;
