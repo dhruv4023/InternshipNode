@@ -9,6 +9,7 @@ export const createChatroom = async (req, res) => {
     try {
         const { tokenData: { userId }, body: { name, anotherUserId } } = req;
         const chatRoom = await addNewChatRoom({ name, users: [userId, anotherUserId] })
+
         return RESPONSE.success(res, 4102, chatRoom, 201); // Chatroom created successfully
     } catch (error) {
         return RESPONSE.error(res, 9999); // Internal server error
@@ -19,10 +20,8 @@ export const getAllChatroomsByUser = async (req, res) => {
         const { tokenData: { userId } } = req;
 
         // Fetch chatrooms where the user ID exists in the users array
-        const chatrooms = await ChatRooms.find({ users: userId }, { _id: 1, name: 1 })//.skip(startIndex).limit(limit);
-        // const totalCount = await ChatRooms.countDocuments({ "users.userId": userId });
-
-        // const paginatedResponse = getPaginatedResponse(chatrooms, page, limit, totalCount);
+        const chatrooms = await ChatRooms.find({ users: userId }, { _id: 1, name: 1 })
+        
         return RESPONSE.success(res, 4101, chatrooms); // Chatrooms retrieved successfully
     } catch (error) {
         return RESPONSE.error(res, 9999); // Internal server error

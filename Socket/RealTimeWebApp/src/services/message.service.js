@@ -26,7 +26,7 @@ export const addMessageToChatRoom = async ({ chatRoomId, userId, content }) => {
         if (updateResult.nModified === 0) {
             throw new Error('Failed to add message to chatroom');
         }
-        
+
         await session.commitTransaction();
         session.endSession();
 
