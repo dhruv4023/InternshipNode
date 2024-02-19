@@ -1,11 +1,19 @@
 import db from "../../models/index.js";
 import { getPaginationMetadata, getPaginatedResponse } from '../../helpers/pagination.helper.js';
 import RESPONSE from "../../helpers/response.helper.js";
+import { addMessageToChatRoom } from '../../services/message.service.js';
+import isValidData from "../../helpers/validation/data_validator.js";
+
 const { ChatRooms } = db;
 
-import { addMessageToChatRoom } from '../../services/message.service.js';
-
 export const createMessage = async (req, res) => {
+    const validationErr = await isValidData(req.body, {
+        content: 'required|string',
+    })
+
+    if (validationErr)
+        return RESPONSE.error(res, validationErr);
+
     try {
         const {
             params: { id },

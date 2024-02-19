@@ -3,9 +3,19 @@ const { ChatRooms } = db;
 import RESPONSE from '../../helpers/response.helper.js';
 import { addNewChatRoom } from "../../services/chat.service.js";
 
+import isValidData from "../../helpers/validation/data_validator.js";
 
 // Controller function to create a new chatroom
 export const createChatroom = async (req, res) => {
+   
+    const validationErr = await isValidData(req.body, {
+        name: 'required|string',
+        anotherUserId: 'required',
+    })
+
+    if (validationErr)
+        return RESPONSE.error(res, validationErr);
+
     try {
         const { tokenData: { userId }, body: { name, anotherUserId } } = req;
         const chatRoom = await addNewChatRoom({ name, users: [userId, anotherUserId] })
@@ -21,7 +31,7 @@ export const getAllChatroomsByUser = async (req, res) => {
 
         // Fetch chatrooms where the user ID exists in the users array
         const chatrooms = await ChatRooms.find({ users: userId }, { _id: 1, name: 1 })
-        
+
         return RESPONSE.success(res, 4101, chatrooms); // Chatrooms retrieved successfully
     } catch (error) {
         return RESPONSE.error(res, 9999); // Internal server error

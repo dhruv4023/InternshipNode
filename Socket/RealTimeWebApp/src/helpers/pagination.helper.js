@@ -2,7 +2,7 @@
 
 const getPaginationMetadata = ({ page, limit }) => {
     const startIndex = (parseInt(page) - 1) * parseInt(limit) || 0;
-    const endIndex = startIndex + parseInt(limit) || 10;
+    const endIndex = startIndex + parseInt(limit) || 5;
     return { startIndex, endIndex };
 }
 
