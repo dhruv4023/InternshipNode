@@ -8,6 +8,11 @@ import { useSelector } from 'react-redux'
 import { io } from 'socket.io-client'
 import UserWidgets from '../ProfilePage/Widgets/UserWidgets'
 import { getUser } from '../ProfilePage/User.api'
+import EditChat from '../../PopUps/StartNewChat/EditChat'
+import FlexBetween from '../../Components/FlexBetween'
+import { IconButton } from '@mui/material'
+import { DeleteForever } from '@mui/icons-material'
+import { deleteChatRoom } from '../../PopUps/StartNewChat/chat.api'
 
 const RenderChat = () => {
   const { CID } = useParams()
@@ -23,11 +28,14 @@ const RenderChat = () => {
       CID &&
       getChatData({ limit: 10, CID, token })
         .then(d => {
-          setChatData(d)
-          !anotherUser &&
-            getUser(d.users.filter(f => f !== user._id)).then(ad =>
-              setAnotherUser(ad.user)
-            )
+          if (!d) navigate('/')
+          else {
+            setChatData(d)
+            !anotherUser &&
+              getUser(d?.users.filter(f => f !== user._id)).then(ad =>
+                setAnotherUser(ad.user)
+              )
+          }
         })
         .catch(e => alert(e.message))
   }, [setChatData, CID])
@@ -51,17 +59,52 @@ const RenderChat = () => {
   return (
     <>
       {chatData ? (
-        <WidgetsOnPage
-          title={chatData.name}
-          leftComponent={
-            <>{anotherUser ? <UserWidgets user={anotherUser} /> : <>No</>}</>
-          }
-          rightComponent={
-            <>
-              <ChatBox CID={CID} socket={socket} messages={chatData.messages} />
-            </>
-          }
-        />
+        <>
+          <WidgetsOnPage
+            title={
+              <FlexBetween>
+                <FlexBetween>
+                  <EditChat data={{ name: chatData.name, chatRoomId: CID }} />
+                  <IconButton
+                    sx={{
+                      background: 'red',
+                      margin: '0.5rem',
+                      padding: '1rem'
+                    }}
+                    onClick={() =>
+                      deleteChatRoom({ chatRoomId: CID, token }).then(d =>
+                        navigate('/')
+                      )
+                    }
+                  >
+                    <DeleteForever />
+                  </IconButton>
+                </FlexBetween>
+                {chatData.name}
+              </FlexBetween>
+            }
+            leftComponent={
+              <>
+                {anotherUser ? (
+                  <UserWidgets user={anotherUser} />
+                ) : (
+                  <>
+                    <Loading />
+                  </>
+                )}
+              </>
+            }
+            rightComponent={
+              <>
+                <ChatBox
+                  CID={CID}
+                  socket={socket}
+                  messages={chatData.messages}
+                />
+              </>
+            }
+          />
+        </>
       ) : (
         <Loading />
       )}

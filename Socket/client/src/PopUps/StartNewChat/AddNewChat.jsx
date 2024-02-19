@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import AddPopUp from '../../Components/MyCompoenents/AddPopUp'
-import NewChatForm from './NewEditChatForm'
+import NewEditChatForm from './NewEditChatForm'
 
 const AddNewChat = ({ refreshPage, setRefreshPage }) => {
   // State to control the visibility of the add auction pop-up dialog
@@ -17,7 +17,7 @@ const AddNewChat = ({ refreshPage, setRefreshPage }) => {
       openAddPopUp={openAddPopUp}
       setOpenAddPopUp={setOpenAddPopUp}
       // Render the NewAuctionForm component within the pop-up dialog
-      form={<NewChatForm setOpenAddPopUp={setOpenAddPopUp} />}
+      form={<NewEditChatForm setOpenAddPopUp={setOpenAddPopUp} />}
     />
   )
 }

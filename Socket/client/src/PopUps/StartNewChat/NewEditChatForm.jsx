@@ -4,9 +4,9 @@ import FlexBetween from '../../Components/FlexBetween'
 import { MyTextField } from '../../Components/MyComponents'
 import MyButton from '../../Components/MyCompoenents/MyButton'
 import { getUser } from '../../Pages/ProfilePage/User.api'
-import { createChatRoom } from './chat.api'
+import { createChatRoom, updateChatRoomName } from './chat.api'
 
-const NewChatForm = ({ data, setOpenAddPopUp }) => {
+const NewEditChatForm = ({ data, setOpenAddPopUp }) => {
   const token = useSelector(s => s.token)
   const user = useSelector(s => s.user)
   const [loading, setLoading] = useState(false)
@@ -21,7 +21,7 @@ const NewChatForm = ({ data, setOpenAddPopUp }) => {
     if (data) {
       setValues({
         user_id: user._id,
-        users: data.users
+        chat_name: data.name
       })
     }
   }, [data])
@@ -29,25 +29,25 @@ const NewChatForm = ({ data, setOpenAddPopUp }) => {
   const onSubmit = e => {
     e.preventDefault()
     setLoading(true)
-    try {
-      if (data == null) {
-        getUser(values.username).then(res => {
-          if (!res) {
-            alert('user not exist with ' + values.username + ' username')
-          } else {
-            createChatRoom({
-              data: { name: values.chat_name, anotherUserId: res._id },
-              token
-            }).then(() => {
-              setOpenAddPopUp(false)
-            })
-          }
-        })
-      } else {
-        // update logic goes here
-      }
-    } catch (error) {
-      console.log(error)
+    if (data == null) {
+      getUser(values.username).then(res => {
+        if (!res) {
+          alert('user not exist with ' + values.username + ' username')
+        } else {
+          createChatRoom({
+            data: { name: values.chat_name, anotherUserId: res.user._id },
+            token
+          }).then(() => {
+            setOpenAddPopUp(false)
+          })
+        }
+      })
+    } else {
+      updateChatRoomName({
+        chatRoomId: data.chatRoomId,
+        data: { name: values.chat_name },
+        token
+      })
     }
     setLoading(false)
   }
@@ -60,11 +60,13 @@ const NewChatForm = ({ data, setOpenAddPopUp }) => {
           setInputVal={onChangehandle}
           name={'chat_name'}
         />
-        <MyTextField
-          val={values?.username}
-          name={'username'}
-          setInputVal={onChangehandle}
-        />
+        {!data && (
+          <MyTextField
+            val={values?.username}
+            name={'username'}
+            setInputVal={onChangehandle}
+          />
+        )}
         <MyButton
           disabled={loading}
           label={!data ? 'Create Chat' : 'Update Settings'}
@@ -74,4 +76,4 @@ const NewChatForm = ({ data, setOpenAddPopUp }) => {
   )
 }
 
-export default NewChatForm
+export default NewEditChatForm

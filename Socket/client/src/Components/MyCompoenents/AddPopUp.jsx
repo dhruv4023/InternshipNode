@@ -12,44 +12,67 @@ const AddPopUp = ({
   openAddPopUp,
   setOpenAddPopUp,
   buttonIcon = <AddRounded />,
-  defaultButton = true
+  buttonComponent = false
 }) => {
   const user = useSelector(s => s.user)
   return (
-    <Box position={'fixed'}>
-      {openAddPopUp && (
-        <Box
-          position={'inherit'}
-          bgcolor={'rgba(0,0,0,0.5)'}
-          top={0}
-          right={0}
-          width={'100vw'}
-          height={'100vh'}
-        >
-          <Box width={'100%'} height={'100%'}>
-            <WidgetWrapper maxWidth={'30rem'} margin={'auto'} my={20}>
-              <MyTitle txt={title} />
-              {form}
-            </WidgetWrapper>
+    <>
+      <Box position={'fixed'} zIndex={4}>
+        {openAddPopUp && (
+          <Box
+            position={'inherit'}
+            bgcolor={'rgba(0,0,0,0.5)'}
+            top={0}
+            right={0}
+            width={'100vw'}
+            height={'100vh'}
+          >
+            <Box width={'100%'} height={'100%'}>
+              <WidgetWrapper maxWidth={'30rem'} margin={'auto'} my={20}>
+                <MyTitle txt={title} />
+                {form}
+              </WidgetWrapper>
+            </Box>
           </Box>
-        </Box>
-      )}
-      {defaultButton && (
-        <Box right={20} bottom={5} position={'inherit'}>
-          <MyButton
-            onclickHandle={() => {
-              user
-                ? setOpenAddPopUp(!openAddPopUp)
-                : alert('Login to start Auction')
-            }}
-            fullwidth={false}
-            label={openAddPopUp ? <CloseRounded /> : <>{buttonIcon}</>}
-            borderRadius={'100%'}
+        )}
+        {!buttonComponent && (
+          <PopUpButton
+            user={user}
+            setOpenAddPopUp={setOpenAddPopUp}
+            buttonIcon={buttonIcon}
+            openAddPopUp={openAddPopUp}
           />
-        </Box>
+        )}
+      </Box>
+      {buttonComponent && (
+        <PopUpButton
+          user={user}
+          setOpenAddPopUp={setOpenAddPopUp}
+          buttonIcon={buttonIcon}
+          openAddPopUp={openAddPopUp}
+        />
       )}
-    </Box>
+    </>
   )
 }
 
 export default AddPopUp
+
+const PopUpButton = ({ user, setOpenAddPopUp, buttonIcon, openAddPopUp }) => {
+  return (
+    <>
+      <Box zIndex={5} right={20} bottom={5} position={'inherit'}>
+        <MyButton
+          onclickHandle={() => {
+            user
+              ? setOpenAddPopUp(!openAddPopUp)
+              : alert('Login to start Auction')
+          }}
+          fullwidth={false}
+          label={openAddPopUp ? <CloseRounded /> : <>{buttonIcon}</>}
+          borderRadius={'100%'}
+        />
+      </Box>
+    </>
+  )
+}

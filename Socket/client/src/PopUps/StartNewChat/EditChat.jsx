@@ -1,28 +1,25 @@
-import React, { useState } from "react";
-import { ModeEditOutline } from "@mui/icons-material";
+import React, { useState } from 'react'
+import { ModeEditOutline } from '@mui/icons-material'
+import NewEditChatForm from './NewEditChatForm'
+import AddPopUp from '../../Components/MyCompoenents/AddPopUp'
 
-const EditAuction = ({ user, data }) => {
+const EditChat = ({ user, data }) => {
   // State to control the visibility of the add auction pop-up dialog
-  const [openAddPopUp, setOpenAddPopUp] = useState(false);
+  const [openAddPopUp, setOpenAddPopUp] = useState(false)
 
   return (
     <AddPopUp
       // Pass user information as a prop to the AddPopUp component
       user={user}
-      title={"Edit Auction"}
+      title={'Edit Chat Name'}
       buttonIcon={<ModeEditOutline />}
       openAddPopUp={openAddPopUp}
       setOpenAddPopUp={setOpenAddPopUp}
+      buttonComponent={true}
       // Render the NewAuctionForm component within the pop-up dialog
-      form={
-        <NewEditAuctionForm
-          user={user}
-          data={data}
-          openAddPopUp={openAddPopUp}
-        />
-      }
+      form={<NewEditChatForm data={data} openAddPopUp={openAddPopUp} />}
     />
-  );
-};
+  )
+}
 
-export default EditAuction;
+export default EditChat
