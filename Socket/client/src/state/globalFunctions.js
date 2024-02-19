@@ -14,14 +14,12 @@ export const formatTimestamp = (timeStamp) => {
   const dateObj = new Date(timeStamp);
 
   // Format the date as dd-mm-yyyy
-  const date = `${(dateObj.getDate() < 10 ? "0" : "") + dateObj.getDate()}-${
-    (dateObj.getMonth() < 9 ? "0" : "") + (dateObj.getMonth() + 1)
-  }-${dateObj.getFullYear()}`;
+  const date = `${(dateObj.getDate() < 10 ? "0" : "") + dateObj.getDate()}-${(dateObj.getMonth() < 9 ? "0" : "") + (dateObj.getMonth() + 1)
+    }-${dateObj.getFullYear()}`;
 
   // Format the time with leading zeros as HH:MM
-  const time = `${(dateObj.getHours() < 10 ? "0" : "") + dateObj.getHours()}:${
-    (dateObj.getMinutes() < 10 ? "0" : "") + dateObj.getMinutes()
-  }`;
+  const time = `${(dateObj.getHours() < 10 ? "0" : "") + dateObj.getHours()}:${(dateObj.getMinutes() < 10 ? "0" : "") + dateObj.getMinutes()
+    }`;
 
   // Return an object containing formatted date and time
   return {
@@ -29,3 +27,13 @@ export const formatTimestamp = (timeStamp) => {
     time,
   };
 };
+
+
+export const getDataFromResponse = async (response) => {
+  const data = await response.json();
+  if (data.success) {
+    return data?.data ? data.data : alert(data.message);
+  }
+  alert(data.message);
+  return null;
+}

@@ -1,111 +1,119 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Button,
   IconButton,
   TextField,
   Typography,
-  useTheme,
-} from "@mui/material";
-import { setLogin } from "../../state";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import Dropzone from "react-dropzone";
-import FlexBetween from "../../Components/FlexBetween";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import FlexEvenly from "../../Components/FlexEvenly";
-import { getUserNames, login, updateProfile } from "./LoginRegisterChangePass";
-import { SelectLocation } from "../../Components/MyComponents";
-import { CheckBox, CheckBoxOutlineBlank } from "@mui/icons-material";
-import Loading from "../../Components/Loading/Loading";
+  useTheme
+} from '@mui/material'
+import { setLogin } from '../../state'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import Dropzone from 'react-dropzone'
+import FlexBetween from '../../Components/FlexBetween'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import FlexEvenly from '../../Components/FlexEvenly'
+import {
+  getUserNames,
+  login,
+  register,
+  updateProfile
+} from './LoginRegisterChangePass'
+import { SelectLocation } from '../../Components/MyComponents'
+import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
+import Loading from '../../Components/Loading/Loading'
 
 const Form = ({ pgType, editProfile, user }) => {
   // Initial values for registration and login
   const initialValuesRegister = {
-    username: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    about: "",
-    password: "",
-    picPath: "",
+    username: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    about: '',
+    password: '',
+    picPath: '',
     location: {
-      state: "Gujarat",
-      city: "",
-      pincode: "",
-    },
-  };
+      state: 'Gujarat',
+      city: '',
+      pincode: ''
+    }
+  }
   const initialValuesLogin = {
-    uid: "",
-    password: "",
-  };
+    uid: '',
+    password: ''
+  }
 
-  const { palette } = useTheme();
-  const [loading, setLoading] = useState(false);
-  const [pageType, setPageType] = useState(pgType);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const isLogin = pageType === "Login";
-  const isRegister = pageType === "Register";
+  const { palette } = useTheme()
+  const [loading, setLoading] = useState(false)
+  const [pageType, setPageType] = useState(pgType)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const isLogin = pageType === 'Login'
+  const isRegister = pageType === 'Register'
 
   // Set initial values based on page type
   const [values, setValues] = useState(
     isLogin ? initialValuesLogin : editProfile ? user : initialValuesRegister
-  );
+  )
 
   // Handle form field changes
   const onChangehandle = (val, name) => {
-    let tmp = { ...values };
-    tmp[name] = val;
-    setValues(tmp);
-  };
+    let tmp = { ...values }
+    tmp[name] = val
+    setValues(tmp)
+  }
 
   // Handle image change
   const imgChangeHandl = (fl, name) => {
-    let tmp = values;
-    tmp[name] = fl;
-    setValues(tmp);
-  };
+    let tmp = values
+    tmp[name] = fl
+    setValues(tmp)
+  }
 
-  const token = useSelector((s) => s.token);
+  const token = useSelector(s => s.token)
 
-  const [userNames, setUserNames] = useState();
+  const [userNames, setUserNames] = useState()
 
   // Handle form submission
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (editProfile) values["_id"] = true;
+  const handleFormSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
+    if (editProfile) values['_id'] = true
 
     if (isLogin) {
-      // Handle login
-      await login(values, dispatch, setLogin, navigate);
+      await login(values, dispatch, setLogin, navigate) // Handle login
     } else if (userNames?.includes(values.username)) {
-      alert("Please select a unique username.");
+      alert('Please select a unique username.')
     } else if (editProfile && values.email === user.email) {
       // Handle profile update
-      alert(await updateProfile(values, dispatch, token, navigate));
+      await updateProfile(values, dispatch, token, navigate)
     } else {
-      // Navigate to email verification if registering
-      navigate("/verifyemail", { state: values });
+      await register(values)
+      // navigate("/auth/login", { state: null });
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   // Reset form values
   const resetForm = () => {
-    setValues(!isLogin ? initialValuesLogin : initialValuesRegister);
-  };
+    setValues(!isLogin ? initialValuesLogin : initialValuesRegister)
+  }
 
-  const [getUserNamesOnce, setGetUserNamesOnce] = useState(false);
+  const [getUserNamesOnce, setGetUserNamesOnce] = useState(false)
 
   useEffect(() => {
     // Get user names for registration once
-    !editProfile && isRegister && getUserNames(setUserNames);
-  }, [getUserNamesOnce]);
+    !editProfile &&
+      isRegister &&
+      getUserNames()
+        .then(d => setUserNames(d))
+        .catch(e => alert(e))
+  }, [getUserNamesOnce])
 
   return (
-    <form onSubmit={handleFormSubmit} style={{ width: "100%" }}>
+    <form onSubmit={handleFormSubmit} style={{ width: '100%' }}>
       {loading ? (
         <Loading />
       ) : (
@@ -122,61 +130,61 @@ const Form = ({ pgType, editProfile, user }) => {
       <Box>
         <Button
           fullWidth
-          type="submit"
+          type='submit'
           disabled={loading}
           sx={{
-            m: "2rem 0",
-            p: "1rem",
+            m: '2rem 0',
+            p: '1rem',
             backgroundColor: palette.primary.main,
             color: palette.background.alt,
-            "&:hover": { color: palette.primary.main },
+            '&:hover': { color: palette.primary.main }
           }}
         >
-          {isLogin ? "LOGIN" : editProfile ? "Save Changes" : "REGISTER"}
+          {isLogin ? 'LOGIN' : editProfile ? 'Save Changes' : 'REGISTER'}
         </Button>
         {!editProfile && (
           <Typography
             onClick={() => {
-              setPageType(isLogin ? "Register" : "Login");
-              setGetUserNamesOnce(true);
-              resetForm();
+              setPageType(isLogin ? 'Register' : 'Login')
+              setGetUserNamesOnce(true)
+              resetForm()
             }}
             sx={{
-              textDecoration: "underline",
+              textDecoration: 'underline',
               color: palette.primary.main,
-              "&:hover": {
-                cursor: "pointer",
-                color: palette.primary.light,
-              },
+              '&:hover': {
+                cursor: 'pointer',
+                color: palette.primary.dark
+              }
             }}
           >
             {isLogin
               ? "Don't have an account? Sign Up here."
-              : "Already have an account? Login here."}
+              : 'Already have an account? Login here.'}
           </Typography>
-        )}{" "}
-        {isLogin && (
+        )}{' '}
+        {/* {isLogin && (
           <Typography
             onClick={() => {
-              navigate("/changepass", { state: { page: "enteremail" } });
+              navigate('/auth/changepass', { state: { page: 'enteremail' } })
             }}
             sx={{
-              textDecoration: "underline",
+              textDecoration: 'underline',
               color: palette.primary.main,
-              "&:hover": {
-                cursor: "pointer",
-                color: palette.primary.light,
-              },
+              '&:hover': {
+                cursor: 'pointer',
+                color: palette.primary.dark
+              }
             }}
           >
             Forgot Password ?
           </Typography>
-        )}
+        )} */}
       </Box>
     </form>
-  );
-};
-export default Form;
+  )
+}
+export default Form
 
 const FormFields = ({
   onChangehandle,
@@ -185,55 +193,55 @@ const FormFields = ({
   isRegister,
   isLogin,
   editProfile,
-  imgChangeHandl,
+  imgChangeHandl
 }) => {
-  const [addPic, setAddPic] = useState(false);
-  const { palette } = useTheme();
+  const [addPic, setAddPic] = useState(false)
+  const { palette } = useTheme()
   return (
     <>
       {isRegister && (
         <FlexEvenly>
           <TextField
             required
-            label="First Name"
-            onChange={(e) => onChangehandle(e.target.value, "firstName")}
-            name="firstName"
+            label='First Name'
+            onChange={e => onChangehandle(e.target.value, 'firstName')}
+            name='firstName'
             value={values.firstName}
-            sx={{ margin: "0.5rem", width: "100%" }}
+            sx={{ margin: '0.5rem', width: '100%' }}
           />
           <TextField
             required
-            label="Last Name"
-            onChange={(e) => onChangehandle(e.target.value, "lastName")}
-            name="lastName"
+            label='Last Name'
+            onChange={e => onChangehandle(e.target.value, 'lastName')}
+            name='lastName'
             value={values.lastName}
-            sx={{ margin: "0.5rem", width: "100%" }}
+            sx={{ margin: '0.5rem', width: '100%' }}
           />
         </FlexEvenly>
       )}
-      <FlexEvenly flexDirection="column" margin={"0 .5rem 0 .5rem"}>
+      <FlexEvenly flexDirection='column' margin={'0 .5rem 0 .5rem'}>
         <TextField
           required
-          type={isRegister ? "email" : "text"}
-          label={isLogin ? "Email or Username" : "Email"}
-          onChange={(e) =>
+          type={isRegister ? 'email' : 'text'}
+          label={isLogin ? 'Email or Username' : 'Email'}
+          onChange={e =>
             isLogin
-              ? onChangehandle(e.target.value, "uid")
-              : onChangehandle(e.target.value, "email")
+              ? onChangehandle(e.target.value, 'uid')
+              : onChangehandle(e.target.value, 'email')
           }
           value={values.email}
-          name="email"
-          sx={{ margin: "0.5rem", width: "100%" }}
+          name='email'
+          sx={{ margin: '0.5rem', width: '100%' }}
         />
         {!editProfile && (
           <TextField
             required
-            label="Password"
-            type="password"
-            onChange={(e) => onChangehandle(e.target.value, "password")}
+            label='Password'
+            type='password'
+            onChange={e => onChangehandle(e.target.value, 'password')}
             value={values.password}
-            name="password"
-            sx={{ margin: "0.5rem", width: "100%" }}
+            name='password'
+            sx={{ margin: '0.5rem', width: '100%' }}
           />
         )}
         {isRegister && (
@@ -242,74 +250,74 @@ const FormFields = ({
               <TextField
                 disabled={editProfile}
                 value={values.username}
-                sx={{ margin: "0.5rem", width: "100%" }}
+                sx={{ margin: '0.5rem', width: '100%' }}
               />
             ) : userNames ? (
               <TextField
                 disabled={editProfile}
                 required
-                label="Username"
+                label='Username'
                 error={userNames?.includes(values.username) && !editProfile}
-                onChange={(e) => onChangehandle(e.target.value, "username")}
+                onChange={e => onChangehandle(e.target.value, 'username')}
                 value={values.username}
-                name="username"
-                helperText={"Enter Unique Username"}
-                sx={{ margin: "0.5rem", width: "100%" }}
+                name='username'
+                helperText={'Enter Unique Username'}
+                sx={{ margin: '0.5rem', width: '100%' }}
               />
             ) : (
               <Loading />
             )}
             <TextField
               required
-              label="About"
-              onChange={(e) => onChangehandle(e.target.value, "about")}
-              name="about"
+              label='About'
+              onChange={e => onChangehandle(e.target.value, 'about')}
+              name='about'
               value={values.about}
-              sx={{ margin: "0.5rem", width: "100%" }}
+              sx={{ margin: '0.5rem', width: '100%' }}
             />
-            <FlexBetween width={"100%"}>
+            <FlexBetween width={'100%'}>
               <IconButton
                 onClick={() => {
-                  setAddPic(!addPic);
-                  imgChangeHandl("", "picPath");
+                  setAddPic(!addPic)
+                  imgChangeHandl('', 'picPath')
                 }}
               >
                 {addPic ? <CheckBox /> : <CheckBoxOutlineBlank />}
               </IconButton>
-              <Typography flexGrow={"1"}>
+              <Typography flexGrow={'1'}>
                 {addPic
-                  ? "Click to turn off Picture Option"
-                  : "Click to turn on Picture Option"}
+                  ? 'Click to turn off Picture Option'
+                  : 'Click to turn on Picture Option'}
               </Typography>
             </FlexBetween>
             {addPic && (
               <Box
                 border={`2px solid ${palette.neutral.medium}`}
-                borderRadius="5px"
-                width={"100%"}
-                p="1rem"
-                margin={"0.5rem"}
+                borderRadius='5px'
+                width={'100%'}
+                p='1rem'
+                margin={'0.5rem'}
               >
                 <Dropzone
-                  acceptedFiles=".jpg,.jpeg,.png"
+                  acceptedFiles='.jpg,.jpeg,.png'
                   multiple={false}
-                  onDrop={(acceptedFiles) => {
-                    imgChangeHandl(acceptedFiles[0], "picPath");
+                  onDrop={acceptedFiles => {
+                    imgChangeHandl(acceptedFiles[0], 'picPath')
                   }}
                 >
                   {({ getRootProps, getInputProps }) => (
                     <Box
                       {...getRootProps()}
                       border={`1px dashed ${palette.primary.main}`}
-                      textAlign="center"
-                      sx={{ "&:hover": { cursor: "pointer" } }}
+                      textAlign='center'
+                      sx={{ '&:hover': { cursor: 'pointer' } }}
                     >
                       <input {...getInputProps()} />
-                      {values?.picPath === "" ? (
+                      {values?.picPath === '' ? (
                         <p>Add Picture Here</p>
                       ) : (
                         <FlexBetween>
-                          <Typography padding={"0.5rem "}>
+                          <Typography padding={'0.5rem '}>
                             {values.picPath.name}
                           </Typography>
                           <EditOutlinedIcon />
@@ -333,5 +341,5 @@ const FormFields = ({
         </>
       )}
     </>
-  );
-};
+  )
+}

@@ -8,7 +8,7 @@ const HomePage = () => {
     if (user) {
       navigate(`/profile/${user.username}`)
     } else {
-      navigate(`/login`)
+      navigate(`/auth/login`)
     }
   }, [user, navigate])
   return <></>

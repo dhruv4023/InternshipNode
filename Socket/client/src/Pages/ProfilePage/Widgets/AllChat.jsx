@@ -13,10 +13,14 @@ const AllChat = () => {
   const token = useSelector(state => state.token)
   const [chats, setChats] = useState()
   useEffect(() => {
-    fetchChatrooms(token).then(d => setChats(d))
-  }, [setChats])
+    fetchChatrooms(token)
+      .then(d => {
+        setChats(d)
+      })
+      .catch(e => alert(e.message))
+  }, [setChats, token])
   const navigate = useNavigate()
-  
+
   return (
     <FlexEvenly flexDirection={'column'} gap={'0.5rem'}>
       {chats ? (

@@ -11,14 +11,13 @@ export const AllRoutes = () => {
   const navigate = useNavigate()
   const user = useSelector(s => s.user)
   useEffect(() => {
-    if (!user) navigate(`/login`)
+    if (!user) navigate(`/auth/login`)
   }, [user, navigate])
 
   return (
     <Routes>
       <Route path={'/'} element={<HomePage />} />
-      <Route path={'/login'} element={<LoginPage />} />
-      <Route path={'/:page'} element={<LoginPage />} />
+      <Route path={'/auth/:page'} element={<LoginPage />} />
       <Route path={'/about'} element={<AboutUs />} />
       <Route path={'/profile/:UID'} element={<ProfilePage />} />
       <Route path={'/chat/:CID'} element={<RenderChat />} />

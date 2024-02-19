@@ -13,6 +13,11 @@ const MESSAGES = {
     4204: 'Message updated successfully',
     4205: 'Message deleted successfully',
 
+    // Authorization messages
+    5001: 'Unauthorized - Admin access required',
+    5002: 'Access denied - Unauthorized',
+    5003: 'Your session expired! Please log in again',
+
     // General messages
     9999: 'Internal Server Error',
 };

@@ -93,7 +93,7 @@ const MenuItems = () => {
         <>
           <IconButton
             onClick={() => {
-              navigate("/login");
+              navigate("/auth/login");
             }}
           >
             <Tooltip title="login">

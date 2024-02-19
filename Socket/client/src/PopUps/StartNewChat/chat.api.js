@@ -1,22 +1,20 @@
+import { getDataFromResponse } from "../../state/globalFunctions";
 
 export const createChatRoom = async ({ data, token }) => {
-    const requestOptions = {
-        method: "POST",
-        headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data),
-    };
-
     try {
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data),
+        };
+
         const response = await fetch(`${process.env.REACT_APP_REST_API}/chat/room/`, requestOptions);
-        const result = await response.json();
-        
-        if (result.success) return result;
-        else alert(result.message)
+        return await getDataFromResponse(response);
+
     } catch (error) {
-        console.error(error);
-        throw error;
+        throw Error("Error creating chatroom")
     }
 }

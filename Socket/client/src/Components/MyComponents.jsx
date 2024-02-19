@@ -79,10 +79,6 @@ export const SelectLocation = ({ location, inputValues }) => {
         />
         <TextField
           required
-          inputProps={{
-            minLength: 6,
-            maxLength: 6
-          }}
           label='City'
           onChange={e => onChangehandle(e.target.value, 'city')}
           name='city'
