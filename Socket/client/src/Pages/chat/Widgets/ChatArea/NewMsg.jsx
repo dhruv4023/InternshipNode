@@ -4,7 +4,10 @@ import Messages from './Messages'
 import WriteMsg from './WriteMsg'
 
 const NewMsg = ({ CID, socket }) => {
-  const [msgList, setMsgList] = useState([])
+  const [msgList, setMsgList] = useState([
+    { content: 'hello tmp' },
+    { content: 'hello tmp' }
+  ])
 
   useEffect(() => {
     const handleMessage = message => {
@@ -30,9 +33,7 @@ const NewMsg = ({ CID, socket }) => {
       <Box width={'100%'}>
         <Messages msgLst={msgList} />
       </Box>{' '}
-      <Box position={"sticky"} bottom={0} width={"100%"}>
-        <WriteMsg CID={CID} socket={socket} msgList={msgList} />
-      </Box>
+
     </>
   )
 }

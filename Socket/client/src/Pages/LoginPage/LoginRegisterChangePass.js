@@ -31,9 +31,10 @@ export const register = async (values) => {
 };
 
 // Function to log in a user
-export const login = async (values, dispatch, setLogin, navigate) => {
+export const login = async ({ values, dispatch, setLogin, navigate }) => {
 
   try {
+
     const loggedInResponse = await fetch(
       `${process.env.REACT_APP_REST_API}/auth/login`,
       {
@@ -42,6 +43,7 @@ export const login = async (values, dispatch, setLogin, navigate) => {
         body: JSON.stringify(values),
       }
     );
+
     const loggedIn = await loggedInResponse.json();
 
     if (loggedIn.success) {
@@ -57,7 +59,8 @@ export const login = async (values, dispatch, setLogin, navigate) => {
     }
 
   } catch (error) {
-    throw Error("Error log in user")
+    console.error(error)
+    // throw Error("Error log in user")
   }
 };
 

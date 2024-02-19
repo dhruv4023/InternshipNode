@@ -7,9 +7,14 @@ import { Refresh } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { getChatMessages } from '../chat.api'
 import Loading from '../../../Components/Loading/Loading'
+import WriteMsg from './ChatArea/WriteMsg'
 
 const ChatBox = ({ messages, socket, CID }) => {
   const msgContainerRef = useRef(null)
+  const [loading, setLoading] = useState(false)
+  const [msgList, setMessages] = useState(messages)
+  const [page, setPage] = useState(1)
+
   useEffect(() => {
     if (msgContainerRef.current) {
       const container = msgContainerRef.current
@@ -24,9 +29,26 @@ const ChatBox = ({ messages, socket, CID }) => {
       })
     }
   }, [CID])
-  const [loading, setLoading] = useState(false)
-  const [msgList, setMessages] = useState(messages)
-  const [page, setPage] = useState(1)
+
+  useEffect(() => {
+    const handleMessage = message => {
+      try {
+        const data = JSON.parse(message)
+        setMessages(prevMsgList => [...prevMsgList, data])
+      } catch (error) {
+        console.error('Error parsing message:', error)
+      }
+    }
+
+    // Add event listener on component mount
+    socket.on('message', handleMessage)
+
+    // Remove event listener on component unmount
+    return () => {
+      socket.off('message', handleMessage)
+    }
+  }, [socket, setMessages])
+
   const retriveOldMsgs = () => {
     setLoading(true)
     getChatMessages({ page, chatRoomId: CID })
@@ -55,10 +77,13 @@ const ChatBox = ({ messages, socket, CID }) => {
             height={'55vh'}
             flexDirection={'column'}
             overflow={'auto'}
-            marginBottom={'5rem'}
+            // border={"1px solid"}
           >
             <OldMsgs messages={msgList} CID={CID} />
-            <NewMsg socket={socket} CID={CID} />
+            {/* <NewMsg socket={socket} CID={CID} /> */}
+          </FlexBetween>
+          <FlexBetween>
+            <WriteMsg CID={CID} socket={socket} msgList={msgList} />
           </FlexBetween>
         </>
       )}

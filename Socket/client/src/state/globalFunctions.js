@@ -31,9 +31,11 @@ export const formatTimestamp = (timeStamp) => {
 
 export const getDataFromResponse = async (response) => {
   const data = await response.json();
+ 
   if (data.success) {
     return data?.data ? data.data : alert(data.message);
   }
+ 
   alert(data.message);
   return null;
 }

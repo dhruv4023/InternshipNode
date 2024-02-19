@@ -13,7 +13,7 @@ export const getChatData = async ({ limit = 10, CID, token }) => {
     }
 }
 
-export const getChatMessages = async ({ limit = 5, page = 1, chatRoomId, token }) => {
+export const getChatMessages = async ({ limit = 10, page = 1, chatRoomId, token }) => {
     try {
         const requestOptions = {
             method: "GET", headers: { "Authorization": `Bearer ${token}` }

@@ -7,7 +7,7 @@ import isValidData from "../../helpers/validation/data_validator.js";
 
 // Controller function to create a new chatroom
 export const createChatroom = async (req, res) => {
-   
+
     const validationErr = await isValidData(req.body, {
         name: 'required|string',
         anotherUserId: 'required',
@@ -25,6 +25,7 @@ export const createChatroom = async (req, res) => {
         return RESPONSE.error(res, 9999); // Internal server error
     }
 }
+
 export const getAllChatroomsByUser = async (req, res) => {
     try {
         const { tokenData: { userId } } = req;

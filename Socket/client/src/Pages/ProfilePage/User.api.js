@@ -7,8 +7,8 @@ export const getUser = async (UID) => {
       headers: { "Content-Type": "application/json" },
     });
     return await getDataFromResponse(response);
-
   } catch (error) {
+    console.error(error)
     throw Error("Error retriving user data")
   }
 };

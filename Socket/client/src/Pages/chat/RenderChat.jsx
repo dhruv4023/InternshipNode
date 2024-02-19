@@ -21,18 +21,13 @@ const RenderChat = () => {
   useEffect(() => {
     !chatData &&
       CID &&
-      getChatData({ limit: 5, CID, token })
+      getChatData({ limit: 10, CID, token })
         .then(d => {
-          if (d.success) {
-            setChatData(d.data)
-            !anotherUser &&
-              getUser(d.data.users.filter(f => f !== user._id)).then(ad =>
-                setAnotherUser(ad)
-              )
-          } else {
-            alert(d.message)
-            navigate('/')
-          }
+          setChatData(d)
+          !anotherUser &&
+            getUser(d.users.filter(f => f !== user._id)).then(ad =>
+              setAnotherUser(ad.user)
+            )
         })
         .catch(e => alert(e.message))
   }, [setChatData, CID])
