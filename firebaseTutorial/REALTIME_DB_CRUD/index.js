@@ -52,9 +52,9 @@ const receiveMessages = (chatId) => {
 
 // Example usage
 const chatId = "1"; // Chat ID to send/receive messages
-const messageToSend = "Hello, xyz!"; // Message to send
+const messageToSend = "How are you!"; // Message to send
 const userId = "abc123"
-// sendMessage(chatId, userId, messageToSend); // Send the message
+sendMessage(chatId, userId, messageToSend); // Send the message
 
 // Receive messages from the chat
 receiveMessages(chatId);
