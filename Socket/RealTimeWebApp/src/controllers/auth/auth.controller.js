@@ -1,6 +1,7 @@
 import FormData from 'form-data';
-import RESPONSE from '../../helpers/response.helper.js';
+
 import config from '../../config/config.js';
+import RESPONSE from '../../helpers/response.helper.js';
 import { sendRequest } from '../../helpers/handle_request_axios.js';
 
 const AUTH_API_END = config.micro_services.auth_api_end;

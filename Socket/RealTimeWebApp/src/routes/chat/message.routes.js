@@ -4,10 +4,8 @@ import { verifyTokenAndRole } from '../../middlewares/auth.js';
 
 const router = express.Router();
 
-// Route to create a new message in a chatroom
 router.post('/chatrooms/:id', verifyTokenAndRole(["admin", "user"]), createMessage);
 
-// Route to get all messages in a chatroom
-router.get('/chatrooms/:id', getMessagesByChatroomId);
+router.get('/chatrooms/:id', verifyTokenAndRole(["admin", "user"]), getMessagesByChatroomId);
 
 export default router;

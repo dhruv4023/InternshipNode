@@ -34,18 +34,12 @@ export const getMessagesByChatroomId = async (req, res) => {
     try {
         const { params: { id }, query: { page, limit } } = req;
         const { startIndex, endIndex } = getPaginationMetadata(req.query)
+        const chatroom = await ChatRooms.findOne({ _id: id }, { "messages": { "$slice": [startIndex, endIndex] } });
 
-        const chatroom = await ChatRooms.findOne({ _id: id }, {
-            "messages": { "$slice": [startIndex, endIndex] }
-        });
-
-        if (!chatroom) {
-            return RESPONSE.error(res, 4103, 404); // Chatroom not found
-        }
+        if (!chatroom) return RESPONSE.error(res, 4103, 404);
 
         chatroom.messages.sort((b, a) => b.timestamp - a.timestamp);
         const paginatedResponse = getPaginatedResponse(chatroom.messages, page, limit)
-
         RESPONSE.success(res, 4201, paginatedResponse)
     } catch (error) {
         RESPONSE.error(res, 9000)

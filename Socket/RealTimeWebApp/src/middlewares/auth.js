@@ -22,8 +22,9 @@ export const verifyTokenAndRole = (allowedRoles) => (req, res, next) => {
 
     next();
   } catch (error) {
+    console.log(error)
     if (error.name === 'TokenExpiredError') {
-      RESPONSE.error(res, 5003, 403); // Error code for token expired
+      RESPONSE.error(res, 5003, 403);
     } else {
       RESPONSE.error(res, 9999, 500, error);
     }

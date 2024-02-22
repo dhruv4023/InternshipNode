@@ -1,7 +1,6 @@
 import { Box } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import Messages from './Messages'
-import WriteMsg from './WriteMsg'
 
 const NewMsg = ({ CID, socket }) => {
   const [msgList, setMsgList] = useState([

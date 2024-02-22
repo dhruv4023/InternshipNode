@@ -23,9 +23,10 @@ const MESSAGES = {
 };
 
 const getMessage = messageCode => {
-    if (isNaN(messageCode)) {
+    
+    if (isNaN(messageCode))
         return messageCode;
-    }
+
     return messageCode ? MESSAGES[messageCode] : '';
 };
 

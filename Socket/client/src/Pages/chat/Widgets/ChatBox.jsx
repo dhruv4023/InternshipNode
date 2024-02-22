@@ -2,18 +2,20 @@ import React, { useEffect, useRef, useState } from 'react'
 import WidgetWrapper from '../../../Components/WidgetWrapper'
 import OldMsgs from './ChatArea/OldMsgs'
 import FlexBetween from '../../../Components/FlexBetween'
-import NewMsg from './ChatArea/NewMsg'
 import { Refresh } from '@mui/icons-material'
 import { IconButton } from '@mui/material'
 import { getChatMessages } from '../chat.api'
 import Loading from '../../../Components/Loading/Loading'
 import WriteMsg from './ChatArea/WriteMsg'
+import { useSelector } from 'react-redux'
 
 const ChatBox = ({ messages, socket, CID }) => {
+  const token = useSelector(s => s.token)
   const msgContainerRef = useRef(null)
   const [loading, setLoading] = useState(false)
   const [msgList, setMessages] = useState(messages)
   const [page, setPage] = useState(1)
+  const [disableRefreshBtn, setDisableRefreshBtn] = useState(false)
 
   useEffect(() => {
     if (msgContainerRef.current) {
@@ -51,14 +53,18 @@ const ChatBox = ({ messages, socket, CID }) => {
 
   const retriveOldMsgs = () => {
     setLoading(true)
-    getChatMessages({ page, chatRoomId: CID })
-      .then(data => {
-        page === 1 ? setMessages(msgList) : setMessages([...data, ...msgList])
+    getChatMessages({ page, chatRoomId: CID, token })
+      .then(d => {
+        setDisableRefreshBtn(d.page_information.total_data === 0)
+        page === 1
+          ? setMessages(msgList)
+          : setMessages([...d.page_data, ...msgList])
         setPage(page + 1)
       })
       .finally(() => setLoading(false))
     // console.log('called',page)
   }
+  // console.log(msgList)
   return (
     <WidgetWrapper>
       {loading ? (
@@ -67,8 +73,9 @@ const ChatBox = ({ messages, socket, CID }) => {
         <>
           <FlexBetween>
             <div></div>
-            <IconButton onClick={retriveOldMsgs}>
+            <IconButton disabled={disableRefreshBtn} onClick={retriveOldMsgs}>
               <Refresh />
+              {disableRefreshBtn && <>all data retrived</>}
             </IconButton>
             <div></div>
           </FlexBetween>
