@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Payment Gateway Demo</title>
+</head>
+<body>
+  <h1>Stripe Payment Gateway Demo</h1>
+  <form action="/charge" method="post">
+    <input name="amount" value="1000"> <!-- Sample amount in cents -->
+    <input name="currency" value="usd"> <!-- Sample currency -->
+    <!-- <input name="payment_method" value="Google Pay"> Sample currency -->
+    <input name="description" value="Test Payment">
+    <button type="submit">Pay $10.00</button>
+  </form>
+</body>
+</html>
