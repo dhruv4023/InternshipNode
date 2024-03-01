@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <!-- Include Socket.io client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Connect to Socket.io server
+        var socket = io();
+
+        // Function to send message
+        function sendMessage() {
+            var messageInput = document.getElementById('messageInput');
+            var message = messageInput.value.trim();
+            if (message !== '') {
+                socket.emit('chat message', message);
+                messageInput.value = '';
+            }
+        }
+
+        // Function to display received message
+        socket.on('chat message', function (msg) {
+            var messagesContainer = document.getElementById('messagesContainer');
+            var messageElement = document.createElement('li');
+            messageElement.textContent = msg;
+            messagesContainer.appendChild(messageElement);
+        });
+
+        // Function to render old messages
+        function renderOldMessages(oldMessages) {
+            var messagesContainer = document.getElementById('messagesContainer');
+            oldMessages.forEach(function (msg) {
+                var messageElement = document.createElement('li');
+                messageElement.textContent = msg;
+                messagesContainer.appendChild(messageElement);
+            });
+        }
+
+        // Request old messages from the server when the page loads
+        window.onload = function() {
+            fetch('/messages')
+                .then(response => response.json())
+                .then(data => renderOldMessages(data.messages))
+                .catch(error => console.error('Error fetching old messages:', error));
+        };
+    </script>
+</head>
+<body>
+    <div>
+        <h1>Chat Application</h1>
+        <ul id="messagesContainer"></ul>
+        <input type="text" id="messageInput" placeholder="Type your message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</body>
+</html>
